@@ -5,6 +5,10 @@ import { KindCluster } from "./stacks/kind";
 import { CiliumDeployment } from "./stacks/cilium";
 import { NginxDeployment } from "./stacks/nginx";
 
+
+
+
+
 // Create Kind cluster and get the Kubernetes provider
 const kindClusterComponent = new KindCluster("dev-cluster");
 const k8sProvider = kindClusterComponent.k8sProvider;

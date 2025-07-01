@@ -1,7 +1,0 @@
-# Pulumi.dev.yaml
-name: daksha-ops
-runtime: nodejs
-config:
-  cnpg:manifestPath: ./infra/cnpg-dev.yaml
-  daksha-ops:kindConfigPath: kind-install/kind-config-dev.yaml
-

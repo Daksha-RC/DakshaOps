@@ -1,5 +1,6 @@
 name: DakshaOps
 description: DakshaOps is the GitOps automation layer for the Daksha-RC ecosystem.
+stackConfigDir: config
 runtime:
   name: nodejs
   options:

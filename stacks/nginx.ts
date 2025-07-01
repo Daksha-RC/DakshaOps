@@ -14,7 +14,7 @@ export class NginxDeployment extends pulumi.ComponentResource {
                     dependsOn?: pulumi.Resource[]
                 }, 
                 opts?: pulumi.ComponentResourceOptions) {
-        super("pulumi:example:NginxDeployment", name, {}, opts);
+        super("dakshaOps:NginxDeployment", name, {}, opts);
 
         const { k8sProvider, dependsOn } = args;
 

@@ -1,0 +1,6 @@
+# Pulumi.dev.yaml
+name: daksha-ops
+runtime: nodejs
+config:
+  daksha-ops:kindConfigPath: infra/kind-config-dev.yaml
+

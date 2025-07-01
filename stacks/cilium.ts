@@ -17,13 +17,14 @@ export class CiliumDeployment extends pulumi.ComponentResource {
                     dependsOn?: pulumi.Resource[]
                 }, 
                 opts?: pulumi.ComponentResourceOptions) {
-        super("pulumi:example:CiliumDeployment", name, {}, opts);
+        super("dakshsOps:CiliumDeployment", name, {}, opts);
 
         const { k8sProvider, dependsOn } = args;
 
         // Install Cilium using Helm chart
         this.ciliumRelease = new k8s.helm.v3.Release("cilium", {
             chart: "cilium",
+            version: "1.17.4",
             repositoryOpts: {
                 repo: "https://helm.cilium.io/",
             },
