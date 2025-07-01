@@ -5,7 +5,7 @@ import * as fs from "fs";
 
 // 1. Create Kind cluster (idempotent)
 const kindCluster = new command.local.Command("create-kind-cluster", {
-    create: "kind create cluster --name dev --config kind-install/kind-config-dev.yaml || true",
+    create: "kind create cluster --name dev --config infra/kind-config-dev.yaml || true",
     delete: "kind delete cluster --name dev",
 });
 
@@ -23,7 +23,6 @@ const k8sProvider = new k8s.Provider("kind-provider", {
 // 4. Install Cilium using Helm chart
 const ciliumRelease = new k8s.helm.v3.Release("cilium", {
     chart: "cilium",
-    version: "1.17.4",
     repositoryOpts: {
         repo: "https://helm.cilium.io/",
     },
@@ -34,7 +33,7 @@ const ciliumRelease = new k8s.helm.v3.Release("cilium", {
 
         // Operator configuration (disabled to match remote)
         operator: {
-            enabled: false,
+            enabled: true,
         },
 
         // Envoy configuration (disabled - using embedded mode)
@@ -118,5 +117,5 @@ const deployment = new k8s.apps.v1.Deployment("nginx", {
     },
 }, {
     provider: k8sProvider,
-    dependsOn: [ciliumReady, hubbleUIReady]
+    dependsOn: [ciliumReady,hubbleUIReady]
 });
