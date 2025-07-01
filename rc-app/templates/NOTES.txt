@@ -1,0 +1,1 @@
+🚀 {{ include "rc-app.fullname" . }} has been deployed successfully!

@@ -1,0 +1,10 @@
+name: DakshaOps
+description: DakshaOps is the GitOps automation layer for the Daksha-RC ecosystem.
+runtime:
+  name: nodejs
+  options:
+    packagemanager: yarn
+config:
+  pulumi:tags:
+    value:
+      pulumi:template: kubernetes-typescript
