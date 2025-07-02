@@ -11,21 +11,20 @@ export class KindCluster extends pulumi.ComponentResource {
     public readonly kindCluster: command.local.Command;
 
     constructor(name: string, opts?: pulumi.ComponentResourceOptions) {
-        super("dakshaOps:KindCluster", name, {}, opts);
+        super("dakshaOps:cluster:KindCluster", name, {}, opts);
 
         // Initialize config for your project (named 'daksha-ops')
-        const config = new pulumi.Config("daksha-ops");
+        const config = new pulumi.Config("cluster");
 
 // Get the 'kindConfigPath' value
         const kindConfigPath = config.require("kindConfigPath");
-
 
 
         // 1. Create Kind cluster (idempotent)
         this.kindCluster = new command.local.Command("create-kind-cluster", {
             create: pulumi.interpolate`kind create cluster --name dev --config ${kindConfigPath} || true`,
             delete: "kind delete cluster --name dev",
-        }, { parent: this });
+        }, {parent: this});
 
         // 2. Get kubeconfig (after cluster is created)
         const kubeconfig = this.kindCluster.stdout.apply(_ => {

@@ -8,30 +8,30 @@ import * as k8s from "@pulumi/kubernetes";
 export class NginxDeployment extends pulumi.ComponentResource {
     public readonly deployment: k8s.apps.v1.Deployment;
 
-    constructor(name: string, 
-                args: { 
+    constructor(name: string,
+                args: {
                     k8sProvider: k8s.Provider,
                     dependsOn?: pulumi.Resource[]
-                }, 
+                },
                 opts?: pulumi.ComponentResourceOptions) {
-        super("dakshaOps:NginxDeployment", name, {}, opts);
+        super("dakshaOps:web:NginxDeployment", name, {}, opts);
 
-        const { k8sProvider, dependsOn } = args;
+        const {k8sProvider, dependsOn} = args;
 
         // Deploy NGINX using the provider
-        const appLabels = { app: "nginx" };
-        this.deployment = new k8s.apps.v1.Deployment("nginx", {
-            metadata: { labels: appLabels },
+        const appLabels = {app: "nginx"};
+        this.deployment = new k8s.apps.v1.Deployment(name, {
+            metadata: {labels: appLabels},
             spec: {
-                selector: { matchLabels: appLabels },
+                selector: {matchLabels: appLabels},
                 replicas: 1,
                 template: {
-                    metadata: { labels: appLabels },
+                    metadata: {labels: appLabels},
                     spec: {
                         containers: [{
                             name: "nginx",
                             image: "nginx:latest",
-                            ports: [{ containerPort: 80 }],
+                            ports: [{containerPort: 80}],
                         }],
                     },
                 },

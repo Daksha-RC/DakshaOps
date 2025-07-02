@@ -11,18 +11,18 @@ export class CiliumDeployment extends pulumi.ComponentResource {
     public readonly ciliumReady: command.local.Command;
     public readonly hubbleUIReady: command.local.Command;
 
-    constructor(name: string, 
-                args: { 
+    constructor(name: string,
+                args: {
                     k8sProvider: k8s.Provider,
                     dependsOn?: pulumi.Resource[]
-                }, 
+                },
                 opts?: pulumi.ComponentResourceOptions) {
-        super("dakshsOps:CiliumDeployment", name, {}, opts);
+        super("dakshsOps:infra:CiliumDeployment", name, {}, opts);
 
-        const { k8sProvider, dependsOn } = args;
+        const {k8sProvider, dependsOn} = args;
 
         // Install Cilium using Helm chart
-        this.ciliumRelease = new k8s.helm.v3.Release("cilium", {
+        this.ciliumRelease = new k8s.helm.v3.Release(name, {
             chart: "cilium",
             version: "1.17.4",
             repositoryOpts: {
@@ -87,7 +87,7 @@ export class CiliumDeployment extends pulumi.ComponentResource {
         });
 
         // Wait for Cilium to be ready
-        this.ciliumReady = new command.local.Command("wait-for-cilium", {
+        this.ciliumReady = new command.local.Command(`wait-for-${name}`, {
             create: "kubectl --context kind-dev wait --for=condition=ready pod -l k8s-app=cilium -n kube-system --timeout=300s",
         }, {
             dependsOn: [this.ciliumRelease],
