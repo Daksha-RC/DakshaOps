@@ -153,6 +153,102 @@
         }
       }
     },
+    "cloud-provider-kind@latest": {
+      "last_modified": "2025-06-20T02:24:11Z",
+      "resolved": "github:NixOS/nixpkgs/076e8c6678d8c54204abcb4b1b14c366835a58bb#cloud-provider-kind",
+      "source": "devbox-search",
+      "version": "0.6.0",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/4aj75074cfw8c5mc4b5bxasikbryzr8b-cloud-provider-kind-0.6.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/4aj75074cfw8c5mc4b5bxasikbryzr8b-cloud-provider-kind-0.6.0"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/2xjpj87mmxf56glz362x1akvylp74x9l-cloud-provider-kind-0.6.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/2xjpj87mmxf56glz362x1akvylp74x9l-cloud-provider-kind-0.6.0"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/xn45dd7l2dkylmh02r3v0asyc6ag32il-cloud-provider-kind-0.6.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/xn45dd7l2dkylmh02r3v0asyc6ag32il-cloud-provider-kind-0.6.0"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/kqr2iwhi7mg4yp273zzcd2vh3zh1nfzc-cloud-provider-kind-0.6.0",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/kqr2iwhi7mg4yp273zzcd2vh3zh1nfzc-cloud-provider-kind-0.6.0"
+        }
+      }
+    },
+    "colima@latest": {
+      "last_modified": "2025-07-01T05:58:53Z",
+      "resolved": "github:NixOS/nixpkgs/bdfd0f2afcf764e531d0960c821ab070a6174b15#colima",
+      "source": "devbox-search",
+      "version": "0.8.1",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/14gc1k6154rkb872w4r4qi9rin820pzw-colima-0.8.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/14gc1k6154rkb872w4r4qi9rin820pzw-colima-0.8.1"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/5sycc4p1j8qqpmp2q4n5cgx8mshashy8-colima-0.8.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/5sycc4p1j8qqpmp2q4n5cgx8mshashy8-colima-0.8.1"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/nnicjpwfnjfv4diqpn5v7j73cdwzgnyp-colima-0.8.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/nnicjpwfnjfv4diqpn5v7j73cdwzgnyp-colima-0.8.1"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/xrbbb4lkn3bc602s6vbxc3p0v4p0vja1-colima-0.8.1",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/xrbbb4lkn3bc602s6vbxc3p0v4p0vja1-colima-0.8.1"
+        }
+      }
+    },
     "doctl@latest": {
       "last_modified": "2025-06-24T02:18:21Z",
       "resolved": "github:NixOS/nixpkgs/69dfebb3d175bde602f612915c5576a41b18486b#doctl",

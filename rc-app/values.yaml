@@ -93,12 +93,7 @@ tolerations: [ ]
 
 affinity: { }
 
-databaseurl:
-  valueFromSecret:
-    enabled: true
-    name: "" # If secrets is enabled and this value is empty then secrets from cnpg is used
-    key: "" # The default value is uri if cnpg secrets are used
-  value: "" # Optional:  If secrets enabled is false this value is used to connect to database. Eg:"postgresql://user:secretpassword@localhost:5432/mydatabase"
+databaseurl: { }
 auth0:
   domain: "daksha.us.auth0.com"
   audience: "simpleapi"

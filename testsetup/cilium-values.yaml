@@ -1,0 +1,32 @@
+# values.yaml
+
+image:
+  pullPolicy: IfNotPresent
+ipam:
+  mode: kubernetes
+kubeProxyReplacement: true
+gatewayAPI:
+  enabled: true
+nodePort:
+  enabled: true
+l7Proxy: true
+
+## filename: cilium-values.yaml
+#kubeProxyReplacement: true
+#loadBalancer:
+#  mode: snat
+#gatewayAPI:
+#  enabled: true
+#ipam:
+#  mode: cluster-pool
+#  operator:
+#    clusterPoolIPv4PodCIDRList: ["10.0.0.0/8"]
+#
+#k8s:
+#  serviceHost: "10.89.0.2" # <--- USE THE EXACT IP YOU CONFIRMED
+#  servicePort: 6443
+#
+#l7Proxy: true
+#
+#operator:
+#  replicas: 1 # For simplicity in single-node Kind

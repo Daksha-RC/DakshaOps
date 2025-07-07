@@ -45,14 +45,7 @@ spec:
               protocol: TCP
           env:
             - name: DATABASE_URL
-            {{- if .Values.databaseurl.valueFromSecret.enabled }}
-              valueFrom:
-                secretKeyRef:
-                  name: {{ include "rc-app.fullname" . }}-database-app
-                  key: {{ .Values.databaseurl.valueFromSecret.key | default "uri" }}
-            {{- else }}
-              value: {{ .Values.databaseurl.value | quote }}
-            {{- end }}
+              value: {{ .Values.databaseurl | quote }}
             - name: CLIENT_ORIGIN_URL
               value: {{ .Values.clientOriginUrl | quote }}
             - name: AUTH0_DOMAIN

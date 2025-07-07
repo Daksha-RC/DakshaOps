@@ -376,7 +376,7 @@
   dependencies:
     "@pulumi/pulumi" "^3.142.0"
 
-"@pulumi/kubernetes@^4.0.0":
+"@pulumi/kubernetes@^4.23.0":
   version "4.23.0"
   resolved "https://registry.yarnpkg.com/@pulumi/kubernetes/-/kubernetes-4.23.0.tgz#d50cc56f0d26db3dea7728ae2a5fff773b1e3971"
   integrity sha512-sMNV8cNx+MdvwNXCze3EiYgfRCTilJ9PMq4hqT8lOz7hgX5Un9yyDILJCkrt0wlGlB11Dgbq39mjwCeoImOEgg==
@@ -385,7 +385,7 @@
     glob "^10.3.10"
     shell-quote "^1.6.1"
 
-"@pulumi/pulumi@^3.113.0", "@pulumi/pulumi@^3.142.0":
+"@pulumi/pulumi@^3.142.0", "@pulumi/pulumi@^3.181.0":
   version "3.181.0"
   resolved "https://registry.yarnpkg.com/@pulumi/pulumi/-/pulumi-3.181.0.tgz#3c2b587b49a5f6cc70b7f181d175b42021094b63"
   integrity sha512-2Qrqpubcqdc9oHF1gacY6Ho8FGwPxvico1B+PexGABq2k4v4qxgP8pc5GS4SfzBHOQc10jpOfe9UziLs9w9x2Q==

@@ -1,41 +1,29 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 
-/**
- * NginxDeployment is a ComponentResource that deploys an Nginx instance
- * on a Kubernetes cluster.
- */
+// 1. Define the input arguments interface
+export interface NginxDeploymentArgs {
+    k8sProvider: k8s.Provider;
+    dependsOn?: pulumi.Resource[];
+}
+
+// 2. ComponentResource class using the interface
 export class NginxDeployment extends pulumi.ComponentResource {
-    public readonly deployment: k8s.apps.v1.Deployment;
+    public readonly release: k8s.helm.v3.Release;
 
-    constructor(name: string,
-                args: {
-                    k8sProvider: k8s.Provider,
-                    dependsOn?: pulumi.Resource[]
-                },
-                opts?: pulumi.ComponentResourceOptions) {
-        super("dakshaOps:web:NginxDeployment", name, {}, opts);
+    constructor(name: string, args: NginxDeploymentArgs, opts?: pulumi.ComponentResourceOptions) {
+        super("dakshaOps:infra:NginxDeployment", name, {}, opts);
 
-        const {k8sProvider, dependsOn} = args;
+        const { k8sProvider, dependsOn } = args;
 
-        // Deploy NGINX using the provider
-        const appLabels = {app: "nginx"};
-        this.deployment = new k8s.apps.v1.Deployment(name, {
-            metadata: {labels: appLabels},
-            spec: {
-                selector: {matchLabels: appLabels},
-                replicas: 1,
-                template: {
-                    metadata: {labels: appLabels},
-                    spec: {
-                        containers: [{
-                            name: "nginx",
-                            image: "nginx:latest",
-                            ports: [{containerPort: 80}],
-                        }],
-                    },
-                },
+        this.release = new k8s.helm.v3.Release(name, {
+            chart: "ingress-nginx",
+            version: "4.10.1", // Use the version as appropriate
+            repositoryOpts: {
+                repo: "https://kubernetes.github.io/ingress-nginx"
             },
+            namespace: "ingress-nginx",
+            createNamespace: true,
         }, {
             provider: k8sProvider,
             dependsOn: dependsOn,
@@ -43,7 +31,16 @@ export class NginxDeployment extends pulumi.ComponentResource {
         });
 
         this.registerOutputs({
-            deployment: this.deployment
+            release: this.release,
         });
     }
+}
+
+// 3. Factory function for convenience
+export function createNginxDeployment(
+    name: string,
+    k8sProvider: k8s.Provider,
+    dependsOn?: pulumi.Resource[],
+): NginxDeployment {
+    return new NginxDeployment(name, { k8sProvider, dependsOn });
 }

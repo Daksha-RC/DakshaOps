@@ -1,0 +1,47 @@
+# ~/.colima/colima.yaml
+
+cpu: 4
+memory: 8
+disk: 100
+arch: aarch64
+runtime: containerd
+
+kubernetes:
+  enabled: true
+  version: v1.31.2+k3s1
+  k3sArgs:
+    - --disable=traefik
+    - --disable=servicelb
+    - --flannel-backend=none
+    - --disable-network-policy
+    - --cluster-cidr=10.42.0.0/16
+    - --service-cidr=10.43.0.0/16
+    - --kube-apiserver-arg=feature-gates=GatewayAPI=true
+
+autoActivate: true
+
+network:
+  address: false
+  dns: [8.8.8.8, 1.1.1.1]
+  dnsHosts:
+    host.docker.internal: host.lima.internal
+vmType: vz
+rosetta: true
+mountType: virtiofs
+provision:
+  # needs root to mount
+  - mode: system
+    script: |
+      #!/bin/sh
+      set -e
+      chown -R root:root /opt/cni/bin
+      chmod 755 /opt/cni/bin
+      mount -t bpf bpffs /sys/fs/bpf
+      mount --make-shared /sys/fs/bpf
+      mkdir -p /run/cilium/cgroupv2
+      mount -t cgroup2 none /run/cilium/cgroupv2
+      mount --make-shared /run/cilium/cgroupv2
+      mount --make-shared /
+      chown -R root:root /opt/cni/bin
+      chmod 755 /opt/cni/bin
+

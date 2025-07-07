@@ -1,0 +1,63 @@
+apiVersion: "cilium.io/v2alpha1"
+kind: CiliumLoadBalancerIPPool
+metadata:
+  name: kind-lb-pool
+spec:
+  blocks:
+    - start: "10.0.10.100"
+      stop: "10.0.10.100"
+
+---
+
+# gateway.yaml
+apiVersion: gateway.networking.k8s.io/v1
+kind: Gateway
+metadata:
+  name: dev-gateway
+  namespace: default
+spec:
+  gatewayClassName: cilium
+  listeners:
+    - name: http
+      port: 80
+      protocol: HTTP
+      hostname: "*.nip.io"
+    - name: http-daksha
+      port: 80
+      protocol: HTTP
+      hostname: "*.daksha-rc.in"
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httpbin
+  namespace: default
+spec:
+  parentRefs:
+    - name: dev-gateway
+  hostnames:
+    - "httpbin.127.0.0.1.nip.io"
+    - "httpbin.192.168.64.4.nip.io"
+    - "httpbin.daksha-rc.in"
+  rules:
+    - backendRefs:
+        - name: httpbin
+          port: 80
+---
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: httpbin-path
+  namespace: default
+spec:
+  parentRefs:
+    - name: dev-gateway
+  # No 'hostnames:' field means it matches any hostname
+  rules:
+    - matches:
+        - path:
+            type: PathPrefix
+            value: /httpbin
+      backendRefs:
+        - name: httpbin
+          port: 80

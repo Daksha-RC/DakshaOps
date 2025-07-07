@@ -15,10 +15,12 @@
         "aarch64-darwin"
       ]
     },
-    "doctl":   "latest",
-    "kubectl": "latest",
-    "nodejs":  "latest",
-    "yarn":    "latest"
+    "doctl":               "latest",
+    "kubectl":             "latest",
+    "nodejs":              "latest",
+    "yarn":                "latest",
+    "cloud-provider-kind": "latest",
+    "colima":              "latest"
   },
   "shell": {
     "init_hook": [
