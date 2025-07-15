@@ -365,3 +365,21 @@ colima start --memory 8 --cpu 8  --kubernetes \
   --vm-type=vz --vz-rosetta 
   
 ```
+
+```shell
+doctl compute load-balancer list --format ID,Name
+pulumi import digitalocean:index/loadBalancer:LoadBalancer a724c522953744c6f86f970967794a08 ab6bb6a6-ec46-4a8b-b7c3-da21de06e711
+
+doctl kubernetes cluster list --format ID,Name
+pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster sit-daksha 6e8321d7-c5e8-4ca0-959d-390ff46f48fd
+
+pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster sit-pool 675aa323-ad7b-4e68-bf50-969042480d8d
+
+
+pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster mycluster 1b8b2100-0e9f-4e8f-ad78-9eb578c2a0af
+
+https://api.digitalocean.com/v2/kubernetes/clusters/6e8321d7-c5e8-4ca0-959d-390ff46f48fd
+
+curl -X GET   -H "Content-Type: application/json"   -H "Authorization: Bearer $DIGITALOCEAN_TOKEN"   "https://api.digitalocean.com/v2/kubernetes/clusters/6e8321d7-c5e8-4ca0-959d-390ff46f48fd"
+
+```

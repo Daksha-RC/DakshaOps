@@ -1,0 +1,2 @@
+config:
+  DakshaOps:dbUrl: postgres://sit-db.example.com

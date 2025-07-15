@@ -1,57 +1,74 @@
-import {KindCluster} from "./stacks/kind";
-import {createCiliumDeployment} from "./stacks/cilium";
-import {createNginxDeployment, NginxDeployment} from "./stacks/nginx";
 import {createCnpgCrd} from "./stacks/cnpgcrd";
-import * as pulumi from "@pulumi/pulumi";
 import {createDemoApps} from "./stacks/demoapps";
-import {createGatewayCrd} from "./stacks/gatewaycrd";
-import {createGateway} from "./stacks/gateway";
-import {createHttpRoute} from "./stacks/httpbinroute";
 import {createColimaCluster} from "./stacks/colima";
 import {createPgCluster} from "./stacks/pgcluster";
-import { createRcApp } from "./stacks/rc-app";
+import {createRcApp} from "./stacks/rc-app";
 import {createDebCredentials} from "./stacks/dbcredentials";
+// import {createKubernetesCluster} from "./stacks/dok8s";
+import * as constants from "./constants";
+import {CILIUM_RELEASE_NAME, DO_CLUSTER_NAME, DO_NODE_POOL_NAME} from "./constants";
+import * as pulumi from "@pulumi/pulumi";
+import * as k8s from "@pulumi/kubernetes";
+import {createDOK8sCluster} from "./stacks/dok8s";
+import {createCiliumDeployment} from "./stacks/cilium";
+import {createGateway} from "./stacks/gateway";
+import {createGatewayCrd} from "./stacks/gatewaycrd";
+
 
 const env = pulumi.getStack();
-const CNPG_NAMESPACE = `${env}-cnpg-system`;
-const CILIUM_RELEASE_NAME = `${env}-cilium`;
-const NGINX_DEPLOYMENT_NAME = `${env}-nginx`;
-const DEMOAPPS_NAME = `${env}-demoapps`;
-const GATEWAY_NAME = `${env}-gateway`;
-const GATEWAY_CRD = `${env}-gatewaycrd`;
-const K8S_CLUSTER_NAME = `${env}-cluster`;
-const RC_DATABASE_NAME = `${env}-rc-database`;
-const RC_DATABASE_NAMESPACE = `${env}-pg`;
-const RC_APP_NAME = `${env}-rc-app`;
-const RC_APP_NAMESPACE = "default"
+let k8sProvider: k8s.Provider;
 
 
+// The Plan
+// 1 create a k8s cluster on DO or coliam
+// 2 deploy httpbin
+// 3 deploy gateway crds
+// 4 deploy gateway crds
+// 5 deploy gateway
+// 6 deploy httpbin route
+// 7 deploy cnpg cluster
+// 8 deploy rc-app
+// 8 deploy rc-app httproute
+// 9 Manually install SSL certificates
+// 10 get gateway IP address
+// 11 Update the DNS record for the gateway IP address
 
 
+if (env == "sit") {
+    const doCluster = createDOK8sCluster(DO_CLUSTER_NAME, {
+        clusterName: DO_CLUSTER_NAME,
+        nodePoolName: DO_NODE_POOL_NAME,
+        nodeSize: "s-1vcpu-2gb"
+    });
+    k8sProvider = doCluster.k8sProvider;
 
-// Create Kind cluster and get the Kubernetes provider
-// const kindClusterComponent = new KindCluster("dev-cluster");
-// const k8sProvider = kindClusterComponent.k8sProvider;
-// const kindCluster = kindClusterComponent.kindCluster;
+} else {
+    const colimaStart = createColimaCluster(constants.K8S_CLUSTER_NAME);
+    k8sProvider = colimaStart.k8sProvider;
+    // const k8sCluster = colimaStart.colimaStart;
+}
 
-const colimaStart = createColimaCluster(K8S_CLUSTER_NAME);
-const k8sProvider = colimaStart.k8sProvider;
-const k8sCluster = colimaStart.colimaStart;
+const demoApps = createDemoApps(constants.DEMOAPPS_NAME, k8sProvider);
 
-// Deploy Cilium on the cluster via the factory
-// const ciliumDeployment = createCiliumDeployment(CILIUM_RELEASE_NAME, k8sProvider, [kindCluster,k8sProvider]);
+if (env == "devc") {
+    const ciliumDeployment = createCiliumDeployment(CILIUM_RELEASE_NAME, k8sProvider, [k8sProvider]);
+}
 
-const cnpgcrd = createCnpgCrd(CNPG_NAMESPACE, k8sProvider,[k8sProvider,k8sCluster]);
-const demoApps =  createDemoApps(DEMOAPPS_NAME, k8sProvider, [cnpgcrd]);
-const rcDatabase = createPgCluster(RC_DATABASE_NAMESPACE, k8sProvider, CNPG_NAMESPACE, RC_DATABASE_NAME, [cnpgcrd]);
-// const rcAppCreds = createDebCredentials("rc-app-db-creds", {
-//     namespace: "dev-cnpg-system",
-//     secretName: "dev-pg-app",
-// });
+const cnpgcrd = createCnpgCrd(constants.CNPG_NAMESPACE, k8sProvider, [k8sProvider]);
+// const gatewaycrd = createGatewayCrd("gaatewaycrds", k8sProvider, [k8sProvider]);
+const rcDatabase = createPgCluster(constants.RC_DATABASE_NAMESPACE, k8sProvider, constants.CNPG_NAMESPACE, constants.RC_DATABASE_NAME, [cnpgcrd]);
+// TODO use safer way to get the uri from the secret
 
+// Then create credentials that depend on the database
 const rcAppCreds = createDebCredentials("rc-app-db-creds", {
     namespace: `${env}-cnpg-system`,
-    secretName: `${RC_DATABASE_NAMESPACE}-app`,
+    secretName: `${constants.RC_DATABASE_NAMESPACE}-app`,
+}, {
+    dependsOn: [rcDatabase],
+    provider: k8sProvider  // Make sure to use the same provider
 });
 
-const myApp = createRcApp(RC_APP_NAME, k8sProvider, RC_APP_NAMESPACE, RC_APP_NAME,rcAppCreds.uri);
+
+const myApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE, constants.RC_APP_NAME, rcAppCreds.uri);
+
+

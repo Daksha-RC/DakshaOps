@@ -30,13 +30,13 @@ export class RcApp extends pulumi.ComponentResource {
             values: args.values || {
                 image: {
                     repository: "ghcr.io/daksha-rc/rc-web",
-                    tag: "v0.1.3",
+                    tag: "rc-web-v2.3.2-amd64",
                 },
                 replicaCount: 1,
                 databaseurl: args.dbcred,
             },
             version: "0.1.0", // Update this if your Chart.yaml appVersion is different
-            atomic: true,
+            atomic: false,
         }, {
             parent: this,
             provider: args.k8sProvider,
