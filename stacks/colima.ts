@@ -10,6 +10,7 @@ import * as path from "path";
 export class ColimaCluster extends pulumi.ComponentResource {
     public readonly k8sProvider: k8s.Provider;
     public readonly colimaStart: command.local.Command;
+    public readonly kubeconfig: pulumi.Output<string>;
 
     constructor(name: string, opts?: pulumi.ComponentResourceOptions) {
         super("dakshaOps:cluster:ColimaCluster", name, {}, opts);
@@ -39,14 +40,14 @@ export class ColimaCluster extends pulumi.ComponentResource {
         }, { parent: this, dependsOn: [colimaCheck] });
 
         // 4. Read kubeconfig from the default location
-        const kubeconfig = this.colimaStart.stdout.apply(_ => {
+        this.kubeconfig = this.colimaStart.stdout.apply(_ => {
             const kubeconfigPath = path.join(process.env.HOME || "~", ".kube", "config");
             return fs.readFileSync(kubeconfigPath, "utf8");
         });
 
         // 5. Create a Kubernetes provider using Colima's kubeconfig
         this.k8sProvider = new k8s.Provider("colima-provider", {
-            kubeconfig: kubeconfig,
+            kubeconfig: this.kubeconfig,
         }, {
             parent: this,
             dependsOn: [this.colimaStart]
@@ -54,7 +55,8 @@ export class ColimaCluster extends pulumi.ComponentResource {
 
         this.registerOutputs({
             k8sProvider: this.k8sProvider,
-            colimaStart: this.colimaStart
+            colimaStart: this.colimaStart,
+            kubeconfig: this.kubeconfig
         });
     }
 }

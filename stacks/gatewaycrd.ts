@@ -6,12 +6,9 @@ import {CustomResource} from "@pulumi/pulumi";
 // 1. Define the input arguments interface
 export interface GatewayCrdArgs {
     k8sProvider: k8s.Provider;
+    kubeconfig: pulumi.Output<string>; // Add kubeconfig secret
     dependsOn?: pulumi.Resource[];
 }
-
-const config = new pulumi.Config("cluster");
-const kubeContext = config.require("kubeContext");
-
 
 // 2. ComponentResource for Gateway CRDs
 export class GatewayCrd extends pulumi.ComponentResource {
@@ -22,36 +19,44 @@ export class GatewayCrd extends pulumi.ComponentResource {
     constructor(name: string, args: GatewayCrdArgs, opts?: pulumi.ComponentResourceOptions) {
         super("dakshsOps:infra:GatewayCrd", name, {}, opts);
 
-        const {k8sProvider, dependsOn} = args;
+        const {k8sProvider, kubeconfig, dependsOn} = args;
 
-        // Official manifests for Kubernetes Gateway CRDs
-        const gatewayCrdUrl = "./stacks/standard-install.yaml";
-
-        // this.crds = new k8s.yaml.ConfigFile(`${name}-gateway-crds`, {
-        //     file: gatewayCrdUrl,
-        // }, {
-        //     provider: k8sProvider,
-        //     dependsOn: dependsOn,
-        //     parent: this,
-        // });
-
+        // Command to apply the Gateway CRDs using the provided kubeconfig
         this.crds = new command.local.Command("apply-gateway-crds", {
-            create: `kubectl --context ${kubeContext} apply -f ./stacks/standard-install.yaml`,
+            create: kubeconfig.apply(kc => `
+                set -e
+                TMP_KUBECONFIG=$(mktemp)
+                trap 'rm -f "$TMP_KUBECONFIG"' EXIT
+                printf "%s" '${kc}' > "$TMP_KUBECONFIG"
+                KUBECONFIG="$TMP_KUBECONFIG" kubectl apply -f ./stacks/standard-install.yaml
+            `),
+            delete: kubeconfig.apply(kc => `
+                set -e
+                TMP_KUBECONFIG=$(mktemp)
+                trap 'rm -f "$TMP_KUBECONFIG"' EXIT
+                printf "%s" '${kc}' > "$TMP_KUBECONFIG"
+                KUBECONFIG="$TMP_KUBECONFIG" kubectl delete -f ./stacks/standard-install.yaml --ignore-not-found=true
+            `),
         }, {
             dependsOn: dependsOn,
             parent: this,
         });
 
-        // Wait for the CRDs to be established and ready in the cluster
-        // We'll check for one key CRD, e.g. gateways.gateway.networking.k8s.io
-        this.crdReady =
-            new command.local.Command(`${name}-wait-gateway-crd`, {
-                create: `kubectl --context ${kubeContext} wait --for=condition=established crd/gateways.gateway.networking.k8s.io --timeout=120s`,
-            }, {
-                dependsOn: [this.crds, ...(args.dependsOn || [])],
-                parent: this,
-            });
+        // Command to wait for the CRDs to be established in the cluster
+        this.crdReady = new command.local.Command(`${name}-wait-gateway-crd`, {
+            create: kubeconfig.apply(kc => `
+                set -e
+                TMP_KUBECONFIG=$(mktemp)
+                trap 'rm -f "$TMP_KUBECONFIG"' EXIT
+                printf "%s" '${kc}' > "$TMP_KUBECONFIG"
+                KUBECONFIG="$TMP_KUBECONFIG" kubectl wait --for=condition=established crd/gateways.gateway.networking.k8s.io --timeout=120s
+            `),
+        }, {
+            dependsOn: [this.crds, ...(dependsOn || [])],
+            parent: this,
+        });
 
+        // The GatewayClass is still managed by Pulumi's Kubernetes provider
         this.gatewayClass = new k8s.apiextensions.CustomResource("cilium-gatewayclass", {
             apiVersion: "gateway.networking.k8s.io/v1",
             kind: "GatewayClass",
@@ -62,8 +67,8 @@ export class GatewayCrd extends pulumi.ComponentResource {
                 controllerName: "io.cilium/gateway-controller",
             },
         }, {
-            provider: k8sProvider,
-            dependsOn: dependsOn,
+            provider: k8sProvider, // Using the provider here
+            dependsOn: [this.crdReady], // Depends on the CRDs being ready
             parent: this,
         });
 
@@ -79,8 +84,8 @@ export class GatewayCrd extends pulumi.ComponentResource {
 export function createGatewayCrd(
     name: string,
     k8sProvider: k8s.Provider,
+    kubeconfig: pulumi.Output<string>, // Add kubeconfig parameter
     dependsOn?: pulumi.Resource[],
 ): GatewayCrd {
-    return new GatewayCrd(name, {k8sProvider, dependsOn});
+    return new GatewayCrd(name, {k8sProvider, kubeconfig, dependsOn});
 }
-

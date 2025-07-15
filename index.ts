@@ -17,6 +17,8 @@ import {createGatewayCrd} from "./stacks/gatewaycrd";
 
 const env = pulumi.getStack();
 let k8sProvider: k8s.Provider;
+let kubeconfig: pulumi.Output<string>;
+
 
 
 // The Plan
@@ -41,12 +43,16 @@ if (env == "sit") {
         nodeSize: "s-1vcpu-2gb"
     });
     k8sProvider = doCluster.k8sProvider;
+    kubeconfig = doCluster.kubeconfig;
+
 
 } else {
     const colimaStart = createColimaCluster(constants.K8S_CLUSTER_NAME);
     k8sProvider = colimaStart.k8sProvider;
-    // const k8sCluster = colimaStart.colimaStart;
+    kubeconfig = colimaStart.kubeconfig;
+
 }
+export { kubeconfig };
 
 const demoApps = createDemoApps(constants.DEMOAPPS_NAME, k8sProvider);
 
@@ -69,6 +75,7 @@ const rcAppCreds = createDebCredentials("rc-app-db-creds", {
 });
 
 
-const myApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE, constants.RC_APP_NAME, rcAppCreds.uri);
+const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE, constants.RC_APP_NAME, rcAppCreds.uri);
 
+const gatewaycrd = createGatewayCrd("gaatewaycrds", k8sProvider, kubeconfig, [cnpgcrd]);
 

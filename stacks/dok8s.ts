@@ -8,6 +8,7 @@ import * as k8s from "@pulumi/kubernetes";
 export class DOK8sCluster extends pulumi.ComponentResource {
     public readonly k8sProvider: k8s.Provider;
     public readonly cluster: digitalocean.KubernetesCluster;
+    public readonly kubeconfig: pulumi.Output<string>;
 
     constructor(name: string, args: {
         clusterName: string;
@@ -32,11 +33,11 @@ export class DOK8sCluster extends pulumi.ComponentResource {
         }, { parent: this });
 
         // Get the kubeconfig from the cluster
-        const kubeconfig = this.cluster.kubeConfigs.apply(kubeConfigs => kubeConfigs[0].rawConfig);
+        this.kubeconfig = this.cluster.kubeConfigs.apply(kubeConfigs => kubeConfigs[0].rawConfig);
 
         // Create a Kubernetes provider using the cluster's kubeconfig
         this.k8sProvider = new k8s.Provider("do-k8s-provider", {
-            kubeconfig: kubeconfig,
+            kubeconfig: this.kubeconfig,
         }, {
             parent: this,
             dependsOn: [this.cluster]
@@ -44,7 +45,8 @@ export class DOK8sCluster extends pulumi.ComponentResource {
 
         this.registerOutputs({
             k8sProvider: this.k8sProvider,
-            cluster: this.cluster
+            cluster: this.cluster,
+            kubeconfig: this.kubeconfig
         });
     }
 }
