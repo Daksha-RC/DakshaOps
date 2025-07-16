@@ -4,9 +4,11 @@ import {createColimaCluster} from "./stacks/colima";
 import {createPgCluster} from "./stacks/pgcluster";
 import {createRcApp} from "./stacks/rc-app";
 import {createDebCredentials} from "./stacks/dbcredentials";
+import {createRedis} from "./stacks/redis";
+import {createRedisCredentials} from "./stacks/rediscredentials";
 // import {createKubernetesCluster} from "./stacks/dok8s";
 import * as constants from "./constants";
-import {CILIUM_RELEASE_NAME, DO_CLUSTER_NAME, DO_NODE_POOL_NAME} from "./constants";
+import {CILIUM_RELEASE_NAME, DO_CLUSTER_NAME, DO_NODE_POOL_NAME, REDIS_NAME, REDIS_NAMESPACE} from "./constants";
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import {createDOK8sCluster} from "./stacks/dok8s";
@@ -74,8 +76,28 @@ const rcAppCreds = createDebCredentials("rc-app-db-creds", {
     provider: k8sProvider  // Make sure to use the same provider
 });
 
+// Create Redis instance with built-in credentials
+const redis = createRedis(
+    REDIS_NAME,
+    k8sProvider,
+    REDIS_NAMESPACE,
+    REDIS_NAME
+);
 
-const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE, constants.RC_APP_NAME, rcAppCreds.uri);
+// Create Redis credentials that depend on the Redis instance
+const redisCredentials = createRedisCredentials("dev-redis-credentials", {
+    namespace: REDIS_NAMESPACE,
+    secretName: `${REDIS_NAME}-credentials`,
+}, {
+    dependsOn: [redis],
+    provider: k8sProvider
+});
 
-const gatewaycrd = createGatewayCrd("gaatewaycrds", k8sProvider, kubeconfig, [cnpgcrd]);
+// You can access Redis credentials in two ways:
+// 1. Directly from the Redis instance: redis.password, redis.host, redis.port, or redis.connectionString
+// 2. From the Redis credentials component: redisCredentials.password
+
+const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE, constants.RC_APP_NAME, rcAppCreds.uri, undefined, [redis, redisCredentials]);
+
+const pulgatewaycrd = createGatewayCrd("gaatewaycrds", k8sProvider, kubeconfig, [cnpgcrd]);
 

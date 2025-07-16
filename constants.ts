@@ -12,6 +12,8 @@ export const RC_DATABASE_NAME = `${env}-rc-database`;
 export const RC_DATABASE_NAMESPACE = `${env}-pg`;
 export const RC_APP_NAME = `${env}-rc-app`;
 export const RC_APP_NAMESPACE = "default"
+export const REDIS_NAME = `${env}-redis`;
+export const REDIS_NAMESPACE = `${env}-redis`;
 
 export const DO_CLUSTER_NAME = `${env}-daksha-cluster`;
 export const DO_NODE_POOL_NAME = `${env}-daksha-pool`;

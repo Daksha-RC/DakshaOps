@@ -10,7 +10,7 @@ export class DebCredentials extends pulumi.ComponentResource {
     public readonly uri: pulumi.Output<string>;
 
     constructor(name: string, args: DebCredentialsArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("custom:component:DebCredentials", name, {}, opts);
+        super("dakshsOps:component:DebCredentials", name, {}, opts);
 
         const secret = k8s.core.v1.Secret.get(`${name}-secret`, pulumi.interpolate`${args.namespace}/${args.secretName}`, { parent: this });
 

@@ -1,14 +1,13 @@
 {
   "$schema": "https://raw.githubusercontent.com/jetify-com/devbox/0.14.2/.schema/devbox.schema.json",
   "packages": {
-    "rustc": "latest",
+    "rustc": "1.86.0",
     "cargo": "1.86.0",
     "rustfmt": "1.86.0",
     "clippy": "1.86.0",
     "cargo-make": "0.37.24",
-    "kind": "0.27.0",
     "sqlx-cli": "0.8.6",
-    "mirrord": "3.142.2",
+    "mirrord": "3.148.0",
     "helm": {
       "version": "latest",
       "excluded_platforms": ["aarch64-darwin"]
@@ -16,11 +15,17 @@
     "doctl": "latest",
     "kubectl": "latest",
     "yarn": "latest",
-    "cloud-provider-kind": "latest",
-    "colima": "latest"
+    "colima": "latest",
+    "k9s": "latest",
+    "pulumi": "latest"
   },
   "shell": {
-    "init_hook": ["echo 'Welcome to devbox!' > /dev/null"],
+    "init_hook": [
+      "echo 'Welcome to devbox!' > /dev/null",
+      "alias gs='git status'",
+      "alias ll='ls -la'",
+      "alias k=kubectl"
+    ],
     "scripts": {
       "test": ["echo \"Error: no test specified\" && exit 1"]
     }
