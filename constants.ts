@@ -17,3 +17,4 @@ export const REDIS_NAMESPACE = `${env}-redis`;
 
 export const DO_CLUSTER_NAME = `${env}-daksha-cluster`;
 export const DO_NODE_POOL_NAME = `${env}-daksha-pool`;
+export const ESO_NAMESPACE = "external-secrets";

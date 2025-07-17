@@ -6,9 +6,11 @@ import {createRcApp} from "./stacks/rc-app";
 import {createDebCredentials} from "./stacks/dbcredentials";
 import {createRedis} from "./stacks/redis";
 import {createRedisCredentials} from "./stacks/rediscredentials";
+import {createEsoCrd} from "./stacks/esocrds";
+import {createEscTokenSecret} from "./stacks/escTokenSecret";
 // import {createKubernetesCluster} from "./stacks/dok8s";
 import * as constants from "./constants";
-import {CILIUM_RELEASE_NAME, DO_CLUSTER_NAME, DO_NODE_POOL_NAME, REDIS_NAME, REDIS_NAMESPACE} from "./constants";
+import {CILIUM_RELEASE_NAME, DO_CLUSTER_NAME, DO_NODE_POOL_NAME, ESO_NAMESPACE, REDIS_NAME, REDIS_NAMESPACE} from "./constants";
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import {createDOK8sCluster} from "./stacks/dok8s";
@@ -63,6 +65,11 @@ if (env == "devc") {
 }
 
 const cnpgcrd = createCnpgCrd(constants.CNPG_NAMESPACE, k8sProvider, [k8sProvider]);
+const esocrd = createEsoCrd(ESO_NAMESPACE, k8sProvider, [k8sProvider]);
+
+// Note: Before running this program, you must set the ESC token in your Pulumi configuration:
+// pulumi config set --secret esc:token <your-esc-token>
+const escTokenSecret = createEscTokenSecret("esc-token", k8sProvider, ESO_NAMESPACE, "esctoken", [esocrd]);
 // const gatewaycrd = createGatewayCrd("gaatewaycrds", k8sProvider, [k8sProvider]);
 const rcDatabase = createPgCluster(constants.RC_DATABASE_NAMESPACE, k8sProvider, constants.CNPG_NAMESPACE, constants.RC_DATABASE_NAME, [cnpgcrd]);
 // TODO use safer way to get the uri from the secret

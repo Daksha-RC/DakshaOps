@@ -24,7 +24,8 @@
       "echo 'Welcome to devbox!' > /dev/null",
       "alias gs='git status'",
       "alias ll='ls -la'",
-      "alias k=kubectl"
+      "alias k=kubectl",
+      "alias esc=pulumi"
     ],
     "scripts": {
       "test": ["echo \"Error: no test specified\" && exit 1"]
