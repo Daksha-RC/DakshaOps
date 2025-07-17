@@ -26,6 +26,13 @@ export class EsoCrd extends pulumi.ComponentResource {
             },
             namespace: name,
             createNamespace: false,
+            // Explicitly enable CRD installation to ensure ClusterSecretStore CRD is available
+            values: {
+                installCRDs: true,
+                crds: {
+                    createClusterSecretStore: true
+                }
+            },
         }, {
             parent: this,
             provider: args.k8sProvider,
