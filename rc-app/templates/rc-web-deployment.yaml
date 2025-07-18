@@ -45,7 +45,18 @@ spec:
               protocol: TCP
           env:
             - name: DATABASE_URL
-              value: {{ .Values.databaseurl | quote }}
+             {{- if .Values.databaseurl.secretRef }}
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.databaseurl.secretRef.name }}
+                  key: {{ .Values.databaseurl.secretRef.key }}
+             {{- else if .Values.databaseurl.value }}
+              value: {{ .Values.databaseurl.value | quote }}
+             {{- else }}
+              # Optional: You can add a default value, or throw an error if no config is provided
+              # value: "postgres://default:default@localhost:5432/defaultdb"
+             {{- fail "Either .Values.databaseurl.secretRef or .Values.databaseurl.value must be set" }}
+             {{- end }}
             - name: CLIENT_ORIGIN_URL
               value: {{ .Values.clientOriginUrl | quote }}
             - name: AUTH0_DOMAIN

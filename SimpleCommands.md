@@ -386,5 +386,6 @@ curl -X GET   -H "Content-Type: application/json"   -H "Authorization: Bearer $D
 
 ```shell
 kubectl get secret dev-cnpg-trimmed-password-secret -n default -o json | jq -r '.data | map_values(@base64d)'
-kubectl get secret dev-cnpg-secret -n default -o json | jq -r '.data | map_values(@base64d)'
+:Deplo
+kubectl get secret dev-pg-app -n dev-cnpg-system -o json | jq -r '.data | map_values(@base64d)'
 ```

@@ -95,19 +95,6 @@ const clusterSecretStore = createClusterSecretStore(
     [escTokenSecret] // dependsOn
 );
 
-// const clusterSecretStore = createSecretStore(
-//     constants.CNPG_SECRET_STORE,
-//     k8sProvider,
-//     RC_APP_NAMESPACE,
-//     escTokenSecret,
-//     undefined,
-//     PULUMI_ORGANIZATION,
-//     esocrd.release,  // Pass the ESO CRD Helm release as a dependency
-//     "dev-daksha-cluster", // Pulumi environment
-//     "Daksha", // Pulumi project
-//     undefined, // <-- apiUrl, use undefined for default or provide a string
-//     [escTokenSecret] // dependsOn
-// );
 // Create an ExternalSecret that fetches the db.cnpgPassword from Pulumi ESC
 const cnpgSecret = createCnpgSecret(
     CNPG_SECRET,
@@ -152,7 +139,7 @@ const redisCredentials = createRedisCredentials("dev-redis-credentials", {
 // 1. Directly from the Redis instance: redis.password, redis.host, redis.port, or redis.connectionString
 // 2. From the Redis credentials component: redisCredentials.password
 
-const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE, constants.RC_APP_NAME, rcAppCreds.uri, undefined, [redis, redisCredentials]);
+const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE, constants.RC_APP_NAME, CNPG_SECRET, undefined, [redis, redisCredentials]);
 
 const pulgatewaycrd = createGatewayCrd("gaatewaycrds", k8sProvider, kubeconfig, [cnpgcrd]);
 

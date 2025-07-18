@@ -93,7 +93,10 @@ tolerations: [ ]
 
 affinity: { }
 
-databaseurl: { }
+databaseurl:
+  secretRef:
+    name: cnpg-secret      # Name of the Kubernetes Secret (e.g., created by External Secrets Operator)
+    key: DATABASE_URL      # Key within that Secret that holds the URL
 auth0:
   domain: "daksha.us.auth0.com"
   audience: "simpleapi"
