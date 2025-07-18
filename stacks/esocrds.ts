@@ -14,8 +14,8 @@ export class EsoCrd extends pulumi.ComponentResource {
 
         // Ensure the namespace exists
         const ns = new k8s.core.v1.Namespace(name, {
-            metadata: { name: name },
-        }, { parent: this, provider: args.k8sProvider, dependsOn: args.dependsOn });
+            metadata: {name: name},
+        }, {parent: this, provider: args.k8sProvider, dependsOn: args.dependsOn});
 
         // Install the External Secrets Operator via Helm
         this.release = new k8s.helm.v3.Release(name, {
@@ -29,9 +29,6 @@ export class EsoCrd extends pulumi.ComponentResource {
             // Explicitly enable CRD installation to ensure ClusterSecretStore CRD is available
             values: {
                 installCRDs: true,
-                crds: {
-                    createClusterSecretStore: true
-                }
             },
         }, {
             parent: this,
@@ -51,5 +48,5 @@ export function createEsoCrd(
     k8sProvider: k8s.Provider,
     dependsOn?: pulumi.Resource[],
 ): EsoCrd {
-    return new EsoCrd(name, { k8sProvider, dependsOn });
+    return new EsoCrd(name, {k8sProvider, dependsOn});
 }
