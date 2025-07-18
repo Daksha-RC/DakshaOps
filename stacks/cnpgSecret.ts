@@ -45,7 +45,6 @@ export class CnpgSecret extends pulumi.ComponentResource {
         // Determine the secret name
         const secretName = args.secretName || `${name}-secret`;
 
-        // Create the ExternalSecret custom resource
         this.externalSecret = new k8s.apiextensions.CustomResource(name, {
             apiVersion: "external-secrets.io/v1",
             kind: "ExternalSecret",
@@ -60,19 +59,20 @@ export class CnpgSecret extends pulumi.ComponentResource {
                     kind: "ClusterSecretStore",
                 },
                 target: {
-                    name: secretName,
+                    name: name,
                     creationPolicy: "Owner",
+                    deletionPolicy: "Retain",
+                    template: {
+                        engineVersion: "v2",
+                        data: {
+                            DB_PASSWORD_TRIMMED: "{{ .cnpgPassword_raw | trim }}",
+                        },
+                    },
                 },
                 data: [
                     {
-                        secretKey: "password",
+                        secretKey: "cnpgPassword_raw",
                         remoteRef: {
-                            // Using Pulumi path syntax: "db.cnpgPassword"
-                            // This is equivalent to the dot notation example: "root.nested"
-                            // Alternative syntaxes could be:
-                            // - "db['cnpgPassword']"  (bracket notation)
-                            // - "['db'].cnpgPassword" (mixed notation)
-                            // - "['db']['cnpgPassword']" (full bracket notation)
                             key: "cnpgPassword",
                         },
                     },

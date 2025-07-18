@@ -19,3 +19,5 @@ export const DO_CLUSTER_NAME = `${env}-daksha-cluster`;
 export const DO_NODE_POOL_NAME = `${env}-daksha-pool`;
 export const ESO_NAMESPACE = "external-secrets";
 export const PULUMI_ORGANIZATION = "gmkumar2005";
+export const CNPG_SECRET = `${env}-cnpg-secret`;
+export const CNPG_SECRET_STORE = `${env}-cnpg-secret-store`;

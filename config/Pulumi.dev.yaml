@@ -1,9 +1,4 @@
 # Pulumi.dev.yaml
-name: daksha-ops
-runtime: nodejs
 config:
-  cluster:kindConfigPath: infra/kind-config-dev.yaml
-  cluster:hostName: "*.nip.io"
-  cluster:kubeContext: kind-dev
 environment:
   - Daksha/dev-daksha-cluster

@@ -1,3 +1,4 @@
+# Pulumi.yaml
 name: DakshaOps
 description: DakshaOps is the GitOps automation layer for the Daksha-RC ecosystem.
 stackConfigDir: config

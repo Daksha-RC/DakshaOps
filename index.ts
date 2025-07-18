@@ -11,19 +11,27 @@ import {createEscTokenSecret} from "./stacks/escTokenSecret";
 import {createClusterSecretStore} from "./stacks/ClusterSecretStore";
 // import {createKubernetesCluster} from "./stacks/dok8s";
 import * as constants from "./constants";
-import {CILIUM_RELEASE_NAME, DO_CLUSTER_NAME, DO_NODE_POOL_NAME, ESO_NAMESPACE, PULUMI_ORGANIZATION, REDIS_NAME, REDIS_NAMESPACE} from "./constants";
+import {
+    CILIUM_RELEASE_NAME, CNPG_SECRET, CNPG_SECRET_STORE,
+    DO_CLUSTER_NAME,
+    DO_NODE_POOL_NAME,
+    ESO_NAMESPACE,
+    PULUMI_ORGANIZATION, RC_APP_NAMESPACE,
+    REDIS_NAME,
+    REDIS_NAMESPACE
+} from "./constants";
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import {createDOK8sCluster} from "./stacks/dok8s";
 import {createCiliumDeployment} from "./stacks/cilium";
-import {createGateway} from "./stacks/gateway";
 import {createGatewayCrd} from "./stacks/gatewaycrd";
+import {createCnpgSecret} from "./stacks/cnpgSecret";
+import {createSecretStore} from "./stacks/SecretStore";
 
 
 const env = pulumi.getStack();
 let k8sProvider: k8s.Provider;
 let kubeconfig: pulumi.Output<string>;
-
 
 
 // The Plan
@@ -57,7 +65,7 @@ if (env == "sit") {
     kubeconfig = colimaStart.kubeconfig;
 
 }
-export { kubeconfig };
+export {kubeconfig};
 
 const demoApps = createDemoApps(constants.DEMOAPPS_NAME, k8sProvider);
 
@@ -74,17 +82,42 @@ const escTokenSecret = createEscTokenSecret("esc-token", k8sProvider, ESO_NAMESP
 
 // Create a ClusterSecretStore that connects to Pulumi ESC using the token
 const clusterSecretStore = createClusterSecretStore(
-    "pulumi-esc",
+    constants.CNPG_SECRET_STORE,
     k8sProvider,
     ESO_NAMESPACE,
     escTokenSecret,
-    "pulumi-esc-store",
+    undefined,
     PULUMI_ORGANIZATION,
     esocrd.release,  // Pass the ESO CRD Helm release as a dependency
-    "Daksha/dev-daksha-cluster", // Pulumi environment
+    "dev-daksha-cluster", // Pulumi environment
     "Daksha", // Pulumi project
-    [escTokenSecret]
+    undefined, // <-- apiUrl, use undefined for default or provide a string
+    [escTokenSecret] // dependsOn
 );
+
+// const clusterSecretStore = createSecretStore(
+//     constants.CNPG_SECRET_STORE,
+//     k8sProvider,
+//     RC_APP_NAMESPACE,
+//     escTokenSecret,
+//     undefined,
+//     PULUMI_ORGANIZATION,
+//     esocrd.release,  // Pass the ESO CRD Helm release as a dependency
+//     "dev-daksha-cluster", // Pulumi environment
+//     "Daksha", // Pulumi project
+//     undefined, // <-- apiUrl, use undefined for default or provide a string
+//     [escTokenSecret] // dependsOn
+// );
+// Create an ExternalSecret that fetches the db.cnpgPassword from Pulumi ESC
+const cnpgSecret = createCnpgSecret(
+    CNPG_SECRET,
+    k8sProvider,
+    RC_APP_NAMESPACE,  // Use the same namespace as RC_APP_NAMESPACE
+    clusterSecretStore,
+    CNPG_SECRET,
+    [clusterSecretStore.secretStore]  // Depend on the ClusterSecretStore
+);
+
 // const gatewaycrd = createGatewayCrd("gaatewaycrds", k8sProvider, [k8sProvider]);
 const rcDatabase = createPgCluster(constants.RC_DATABASE_NAMESPACE, k8sProvider, constants.CNPG_NAMESPACE, constants.RC_DATABASE_NAME, [cnpgcrd]);
 // TODO use safer way to get the uri from the secret
