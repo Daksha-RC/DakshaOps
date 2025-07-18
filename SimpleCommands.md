@@ -383,3 +383,8 @@ https://api.digitalocean.com/v2/kubernetes/clusters/6e8321d7-c5e8-4ca0-959d-390f
 curl -X GET   -H "Content-Type: application/json"   -H "Authorization: Bearer $DIGITALOCEAN_TOKEN"   "https://api.digitalocean.com/v2/kubernetes/clusters/6e8321d7-c5e8-4ca0-959d-390ff46f48fd"
 
 ```
+
+```shell
+kubectl get secret dev-cnpg-trimmed-password-secret -n default -o json | jq -r '.data | map_values(@base64d)'
+kubectl get secret dev-cnpg-secret -n default -o json | jq -r '.data | map_values(@base64d)'
+```

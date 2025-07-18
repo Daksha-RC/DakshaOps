@@ -1,12 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
-import { ClusterSecretStore } from "./ClusterSecretStore";
-import {SecretStore} from "./SecretStore";
-
-// --- Pulumi ESC Configuration ---
-const pulumiOrgName = "gmkumar2005"; // Your Pulumi username or organization name
-const pulumiProjectName = "Daksha"; // Your Pulumi Project name
-const pulumiEscEnvironment = `${pulumiOrgName}/${pulumiProjectName}/dev-daksha-cluster`; // Full path to your ESC environment
+import { SecretStore } from "./SecretStore";
 
 export interface CnpgSecretArgs {
     k8sProvider: k8s.Provider;
@@ -16,16 +10,6 @@ export interface CnpgSecretArgs {
     dependsOn?: pulumi.Resource[];
 }
 
-/**
- * CnpgSecret is a ComponentResource that creates an ExternalSecret resource
- * using the ClusterSecretStore to fetch the db.cnpgPassword from Pulumi ESC.
- *
- * This component:
- * 1. Uses the ClusterSecretStore to connect to Pulumi ESC
- * 2. Creates an ExternalSecret resource that fetches the db.cnpgPassword
- *    from the dev-daksha-cluster environment
- * 3. Creates a Kubernetes Secret with the fetched password
- */
 export class CnpgSecret extends pulumi.ComponentResource {
     public readonly externalSecret: k8s.apiextensions.CustomResource;
     public readonly secretName: pulumi.Output<string>;
@@ -38,11 +22,8 @@ export class CnpgSecret extends pulumi.ComponentResource {
     ) {
         super("dakshaOps:security:CnpgSecret", name, {}, opts);
 
-        // Use the provided namespace
         const namespace = args.namespace;
         this.namespace = pulumi.output(namespace);
-
-        // Determine the secret name
         const secretName = args.secretName || `${name}-secret`;
 
         this.externalSecret = new k8s.apiextensions.CustomResource(name, {
@@ -65,15 +46,14 @@ export class CnpgSecret extends pulumi.ComponentResource {
                     template: {
                         engineVersion: "v2",
                         data: {
-                            DB_PASSWORD_TRIMMED: "{{ .cnpgPassword_raw | trim }}",
+                            DATABASE_URL: `postgres://{{ .databaseUserName }}:{{ .cnpgPassword }}@{{ .databaseHost }}:{{ .databasePort }}/{{ .databaseName }}`,
                         },
                     },
                 },
-                data: [
+                dataFrom: [
                     {
-                        secretKey: "cnpgPassword_raw",
-                        remoteRef: {
-                            key: "cnpgPassword",
+                        extract: {
+                            key: "db",
                         },
                     },
                 ],
@@ -84,7 +64,6 @@ export class CnpgSecret extends pulumi.ComponentResource {
             dependsOn: [args.secretStore.secretStore, ...(args.dependsOn || [])],
         });
 
-        // Store the secret name for later use
         this.secretName = pulumi.output(secretName);
 
         this.registerOutputs({
@@ -95,19 +74,6 @@ export class CnpgSecret extends pulumi.ComponentResource {
     }
 }
 
-/**
- * Factory function to create a CnpgSecret.
- * @param name Resource name
- * @param k8sProvider Kubernetes provider
- * @param namespace Namespace where the ExternalSecret will be created
- * @param secretStore
- * @param secretName Optional name for the Secret (defaults to {name}-secret)
- * @param dependsOn Optional resources this depends on
- * @returns CnpgSecret instance with the following properties:
- *   - externalSecret: The ExternalSecret custom resource
- *   - secretName: The name of the Secret that will be created
- *   - namespace: The namespace where the ExternalSecret is created
- */
 export function createCnpgSecret(
     name: string,
     k8sProvider: k8s.Provider,
