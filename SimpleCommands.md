@@ -388,4 +388,63 @@ curl -X GET   -H "Content-Type: application/json"   -H "Authorization: Bearer $D
 kubectl get secret dev-cnpg-trimmed-password-secret -n default -o json | jq -r '.data | map_values(@base64d)'
 :Deplo
 kubectl get secret dev-pg-app -n dev-cnpg-system -o json | jq -r '.data | map_values(@base64d)'
+export const CNPG_SECRET = `${env}-cnpg-secret`;
+
+kubectl get secret dev-cnpg-secret  -o json | jq -r '.data | map_values(@base64d)'
+kubectl get secret dev-cnpg-secret-app  -o json -n dev-rc-app-ns | jq -r '.data | map_values(@base64d)'  
+kubectl get secret dev-cnpg-secret-db  -o json -n dev-rc-pg-ns  | jq -r '.data | map_values(@base64d)'  
+
+kubectl get secret dev-cnpg-secret-db  -o json -n dev-rc-pg-ns  | jq -r '.data | map_values(@random)'  
+dev-rc-pg-ns.dev-rc-pg-ns-rw
+
+
+kubectl annotate externalsecret dev-cnpg-secret-app force-sync=$(date +%s) --overwrite -n dev-rc-app-ns 
+kubectl annotate externalsecret dev-cnpg-secret-db force-sync=$(date +%s) --overwrite -n dev-rc-pg-ns 
+
+psql "postgres://dev-rc-database:rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bowTGRwsJGVzdaKornYa6pWqrOGuft@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
+psql "postgres://postgres:postgres@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
+psql "postgres://dev-rc-database:rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bowTGRwsJGVzdaKornYa6pWqrOGuft@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
+
+kubectl get secret dev-cnpg-secret-db -n dev-rc-pg-ns -o jsonpath='{.data.password}' | base64 --decode 
+ 
+kubectl exec -it -n dev-rc-pg-ns dev-rc-pg-ns-1 -- /bin/bash
+kubectl cnpg reload cluster dev-rc-pg-ns -n dev-rc-pg-ns
+
+```
+
+```shell
+doctl vpcs list
+ID                                      URN                                            Name            Description    IP Range         Region    Created At                       Default
+441b360e-8036-4bed-b4b5-1cb1df04609a    do:vpc:441b360e-8036-4bed-b4b5-1cb1df04609a    default-blr1                   10.122.0.0/20    blr1      2025-06-24 18:32:17 +0000 UTC    true
+
+doctl kubernetes cluster list -o json | jq -r ".[] | [.id, .cluster_subnet, .service_subnet] | @tsv"
+074852cc-989e-4ca3-bfe2-92643418c0b6	10.244.0.0/16	10.245.0.0/16
+6e8321d7-c5e8-4ca0-959d-390ff46f48fd	10.108.0.0/16	10.109.0.0/19
+
+doctl kubernetes cluster list
+ID                                      Name                  Region    Version        Auto Upgrade    Status     Node Pools
+074852cc-989e-4ca3-bfe2-92643418c0b6    sit-daksha-cluster    blr1      1.33.1-do.1    false           running    sit-daksha-pool
+6e8321d7-c5e8-4ca0-959d-390ff46f48fd    sit-daksha            blr1      1.33.1-do.0    false           running    sit-pool
+
+
+
+
+
+
+doctl kubernetes cluster get 074852cc-989e-4ca3-bfe2-92643418c0b6  --output json | jq '.cluster_subnet, .service_subnet'
+doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd  --output json | jq '.cluster_subnet, .service_subnet'
+
+doctl kubernetes cluster get 074852cc-989e-4ca3-bfe2-92643418c0b6 --output json | jq '.[0] | {name, version, cluster_subnet, service_subnet, vpc_uuid}'
+doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd --output json | jq '.[0] | {name, version, cluster_subnet, service_subnet, vpc_uuid}'
+
+
+
+
+
+
+
+
+
+
+
 ```

@@ -47,6 +47,13 @@ export class CnpgSecret extends pulumi.ComponentResource {
                         engineVersion: "v2",
                         data: {
                             DATABASE_URL: `postgres://{{ .databaseUserName }}:{{ .cnpgPassword }}@{{ .databaseHost }}:{{ .databasePort }}/{{ .databaseName }}`,
+                            // NEW: Expose DB_USER_NAME
+                            username: `{{ .databaseUserName }}`,
+                            // NEW: Expose CNPG_PASSWORD
+                            password: `{{ .cnpgPassword }}`,
+                            DATABASE_HOST: `{{ .databaseHost }}`,
+                            DATABASE_PORT: `{{ .databasePort }}`,
+                            DATABASE_NAME: `{{ .databaseName }}`,
                         },
                     },
                 },

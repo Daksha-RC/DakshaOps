@@ -12,7 +12,7 @@ export class GatewayComponent extends pulumi.ComponentResource {
     public readonly gateway: k8s.apiextensions.CustomResource;
 
     constructor(name: string, args: GatewayArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("dakshsOps:infra:GatewayComponent", name, args, opts);
+        super("dakshsOps:crds:GatewayComponent", name, args, opts);
 
         const namespace =  "default";
 

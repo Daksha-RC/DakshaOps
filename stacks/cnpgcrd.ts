@@ -10,12 +10,7 @@ export class CnpgCrd extends pulumi.ComponentResource {
     public readonly release: k8s.helm.v3.Release;
 
     constructor(name: string, args: CnpgCrdArgs, opts?: pulumi.ComponentResourceOptions) {
-        super("dakshaOps:database:CloudNativePG", name, {}, opts);
-
-        // Ensure the namespace exists
-        const ns = new k8s.core.v1.Namespace(name, {
-            metadata: { name: name },
-        }, { parent: this, provider: args.k8sProvider, dependsOn: args.dependsOn });
+        super("dakshaOps:crds:CloudNativePG", name, {}, opts);
 
         // Install the CNPG operator via Helm
         this.release = new k8s.helm.v3.Release(name, {
@@ -29,7 +24,7 @@ export class CnpgCrd extends pulumi.ComponentResource {
         }, {
             parent: this,
             provider: args.k8sProvider,
-            dependsOn: [ns, ...(args.dependsOn || [])],
+            dependsOn: [...(args.dependsOn || [])],
         });
 
         this.registerOutputs({
