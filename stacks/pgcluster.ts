@@ -5,8 +5,9 @@ export interface PgClusterArgs {
     k8sProvider: k8s.Provider;
     namespace: string;
     databaseName: string;
+    // externalSecretName is now MANDATORY
+    externalSecretName: pulumi.Input<string>;
     dependsOn?: pulumi.Resource[];
-    externalSecretName?: pulumi.Input<string>;
 }
 
 export class PgCluster extends pulumi.ComponentResource {
@@ -15,14 +16,8 @@ export class PgCluster extends pulumi.ComponentResource {
     constructor(name: string, args: PgClusterArgs, opts?: pulumi.ComponentResourceOptions) {
         super("dakshaOps:database:PgCluster", name, {}, opts);
 
-        const ns = new k8s.core.v1.Namespace(args.namespace, {
-            metadata: {name: args.namespace},
-        }, {parent: this, provider: args.k8sProvider, dependsOn: args.dependsOn});
-
-        // Use external secret if provided, else undefined (let CNPG generate)
-        const superuserSecret = args.externalSecretName
-            ? { name: args.externalSecretName }
-            : undefined;
+        // Since externalSecretName is mandatory, we directly use it.
+        const superuserSecretRef = { name: args.externalSecretName };
 
         this.cluster = new k8s.apiextensions.CustomResource(name, {
             apiVersion: "postgresql.cnpg.io/v1",
@@ -37,13 +32,15 @@ export class PgCluster extends pulumi.ComponentResource {
                 bootstrap: {
                     initdb: {
                         database: args.databaseName,
-                        secret: superuserSecret,
+                        // Always link the provided external secret for bootstrap
+                        secret: superuserSecretRef,
                     },
                 },
                 storage: {
                     size: "1Gi"
                 },
-                superuserSecret,
+                // Always use the provided external secret for superuser
+                superuserSecret: superuserSecretRef,
                 monitoring: {
                     enablePodMonitor: false
                 }
@@ -51,7 +48,7 @@ export class PgCluster extends pulumi.ComponentResource {
         }, {
             parent: this,
             provider: args.k8sProvider,
-            dependsOn: [ns, ...(args.dependsOn || [])],
+            dependsOn: [...(args.dependsOn || [])],
         });
 
         this.registerOutputs({
@@ -65,7 +62,8 @@ export function createPgCluster(
     k8sProvider: k8s.Provider,
     namespace: string,
     databaseName: string,
-    externalSecretName?: pulumi.Input<string>,
+    // externalSecretName is now MANDATORY
+    externalSecretName: pulumi.Input<string>,
     dependsOn?: pulumi.Resource[],
 ): PgCluster {
     return new PgCluster(name, {k8sProvider, namespace, databaseName, externalSecretName, dependsOn});

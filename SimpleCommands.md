@@ -405,10 +405,23 @@ psql "postgres://dev-rc-database:rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bowTGRwsJGVzd
 psql "postgres://postgres:postgres@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
 psql "postgres://dev-rc-database:rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bowTGRwsJGVzdaKornYa6pWqrOGuft@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
 
+psql "postgres://dev-rc-database:cllIT24ydzZ5ZFpTNTdwTml6MTN5UjhYU3dPQ05aWDZ2M2Jvd1RHUndzSkdWemRhS29ybllhNnBXcXJPR3VmdA==@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
+psql "postgres://dev-rc-database:123@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
+ALTER ROLE "dev-rc-database" WITH PASSWORD 'dev-rc-database';
+ALTER ROLE "dev-rc-database" WITH PASSWORD 'rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bowTGRwsJGVzdaKornYa6pWqrOGuft';
+
+
+psql "postgres://dev-rc-database:dev-rc-database@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
 kubectl get secret dev-cnpg-secret-db -n dev-rc-pg-ns -o jsonpath='{.data.password}' | base64 --decode 
  
 kubectl exec -it -n dev-rc-pg-ns dev-rc-pg-ns-1 -- /bin/bash
 kubectl cnpg reload cluster dev-rc-pg-ns -n dev-rc-pg-ns
+
+SELECT rolname, rolpassword IS NOT NULL AS has_password
+FROM pg_authid WHERE rolname = 'dev-rc-database';
+
+kubectl exec postgres -- printenv -n dev-rc-pg-ns  | grep -i password
+
 
 ```
 

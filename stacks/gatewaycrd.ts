@@ -28,7 +28,7 @@ export class GatewayCrd extends pulumi.ComponentResource {
                 TMP_KUBECONFIG=$(mktemp)
                 trap 'rm -f "$TMP_KUBECONFIG"' EXIT
                 printf "%s" '${kc}' > "$TMP_KUBECONFIG"
-                KUBECONFIG="$TMP_KUBECONFIG" kubectl apply -f ./stacks/standard-install.yaml
+                KUBECONFIG="$TMP_KUBECONFIG" kubectl apply --server-side -f ./stacks/standard-install.yaml
             `),
             delete: kubeconfig.apply(kc => `
                 set -e

@@ -1,6 +1,6 @@
 import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
-import { SecretStore } from "./SecretStore";
+import {SecretStore} from "./SecretStore";
 
 export interface CnpgSecretArgs {
     k8sProvider: k8s.Provider;
@@ -45,6 +45,11 @@ export class CnpgSecret extends pulumi.ComponentResource {
                     deletionPolicy: "Retain",
                     template: {
                         engineVersion: "v2",
+                        metadata: {
+                            labels: {
+                                "cnpg.io/reload": "true",
+                            },
+                        },
                         data: {
                             DATABASE_URL: `postgres://{{ .databaseUserName }}:{{ .cnpgPassword }}@{{ .databaseHost }}:{{ .databasePort }}/{{ .databaseName }}`,
                             // NEW: Expose DB_USER_NAME

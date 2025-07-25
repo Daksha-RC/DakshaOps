@@ -23,7 +23,6 @@ import * as pulumi from "@pulumi/pulumi";
 import * as k8s from "@pulumi/kubernetes";
 import {createDOK8sCluster} from "./stacks/dok8s";
 import {createCiliumDeployment} from "./stacks/cilium";
-import {createGatewayCrd} from "./stacks/gatewaycrd";
 import {createCnpgSecret} from "./stacks/cnpgSecret";
 import {createPgCluster} from "./stacks/pgcluster";
 
@@ -96,8 +95,8 @@ const rc_app_ns = new k8s.core.v1.Namespace(RC_APP_NAMESPACE, {
 // start of creating crds
 
 const esocrd = createEsoCrd(ESO_NAMESPACE, k8sProvider, [k8sProvider, eso_ns]);
-const cnpgcrd = createCnpgCrd(constants.RC_PG_NAMESPACE, k8sProvider, [k8sProvider, rc_pg_ns]);
-const gatewayCrd = createGatewayCrd("gatewayCrd", k8sProvider, kubeconfig, [cnpgcrd]);
+const cnpgcrd = createCnpgCrd(constants.RC_PG_NAMESPACE, kubeconfig, [k8sProvider, rc_pg_ns]);
+// const gatewayCrd = createGatewayCrd("gatewayCrd", k8sProvider, kubeconfig);
 
 
 // Note: Before running this program, you must set the ESC token in your Pulumi configuration:
@@ -139,7 +138,7 @@ const cnpgSecretforApp = createCnpgSecret(
 
 
 const rcDatabase = createPgCluster(RC_PG_NAMESPACE, k8sProvider, RC_PG_NAMESPACE, constants.RC_DATABASE_NAME,
-    cnpgSecretforApp.secretName, [cnpgcrd,cnpgSecret,rc_pg_ns,eso_ns, redis_ns, rc_pg_ns, esocrd, gatewayCrd, cnpgSecret]);
+    CNPG_SECRET_DB, [cnpgcrd, cnpgSecret, rc_pg_ns, eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecret]);
 
 
 // Create Redis instance with built-in credentials
@@ -165,7 +164,7 @@ const rcDatabase = createPgCluster(RC_PG_NAMESPACE, k8sProvider, RC_PG_NAMESPACE
 //
 const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE,
     constants.RC_APP_NAME, CNPG_SECRET_APP, undefined,
-    [eso_ns, redis_ns, rc_pg_ns, esocrd, gatewayCrd, cnpgSecretforApp,cnpgSecret,rcDatabase]);
+    [eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecretforApp, cnpgSecret, rcDatabase]);
 
 
 
