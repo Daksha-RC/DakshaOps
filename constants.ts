@@ -1,17 +1,13 @@
 import * as pulumi from "@pulumi/pulumi";
 
 const env = pulumi.getStack();
-// export const CNPG_NAMESPACE = `${env}-cnpg-ns`;
 export const RC_APP_NAMESPACE =`${env}-rc-app-ns`;
-// export const RC_DATABASE_NAMESPACE = `${env}-pg-ns`;
 export const RC_PG_NAMESPACE = `${env}-rc-pg-ns`;
+export const RC_PG_CLUSTER_NAME = `${env}-rc-pg-cluster`;
 export const REDIS_NAMESPACE = `${env}-redis-ns`;
 export const ESO_NAMESPACE = `${env}-eso-ns`;
 export const CILIUM_RELEASE_NAME = `${env}-cilium`;
-export const NGINX_DEPLOYMENT_NAME = `${env}-nginx`;
 export const DEMOAPPS_NAME = `${env}-demoapps`;
-export const GATEWAY_NAME = `${env}-gateway`;
-export const GATEWAY_CRD = `${env}-gatewaycrd`;
 export const K8S_CLUSTER_NAME = `${env}-cluster`;
 export const RC_DATABASE_NAME = `${env}-rc-database`;
 

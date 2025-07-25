@@ -414,7 +414,16 @@ ALTER ROLE "dev-rc-database" WITH PASSWORD 'rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bo
 psql "postgres://dev-rc-database:dev-rc-database@dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database"
 kubectl get secret dev-cnpg-secret-db -n dev-rc-pg-ns -o jsonpath='{.data.password}' | base64 --decode 
  
-kubectl exec -it -n dev-rc-pg-ns dev-rc-pg-ns-1 -- /bin/bash
+kubectl exec -it -n dev-rc-pg-ns dev-rc-pg-cluster-1 -- /bin/bash
+
+psql "postgres://dev-rc-database:rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bowTGRwsJGVzdaKornYa6pWqrOGuft@dev-rc-pg-cluster-rw.dev-rc-pg-ns.svc.cluster.local:5432/dev-rc-database" 
+dev-rc-pg-cluster-rw.dev-rc-pg-ns.svc.cluster.local
+dev-rc-pg-ns-rw.dev-rc-pg-ns.svc.cluster.local
+
+kubectl annotate externalsecret dev-cnpg-secret-app force-sync=$(date +%s) --overwrite -n dev-rc-app-ns
+kubectl annotate externalsecret dev-cnpg-secret-db force-sync=$(date +%s) --overwrite -n dev-rc-pg-ns
+
+
 kubectl cnpg reload cluster dev-rc-pg-ns -n dev-rc-pg-ns
 
 SELECT rolname, rolpassword IS NOT NULL AS has_password
