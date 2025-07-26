@@ -30,15 +30,6 @@ export class Redis extends pulumi.ComponentResource {
   ) {
     super("dakshaOps:app:Redis", name, {}, opts);
 
-    // Ensure the namespace exists
-    const ns = new k8s.core.v1.Namespace(
-      args.namespace,
-      {
-        metadata: { name: args.namespace },
-      },
-      { parent: this, provider: args.k8sProvider, dependsOn: args.dependsOn },
-    );
-
     // Generate a random password for Redis
     const redisPassword = new random.RandomPassword(`${name}-password`, {
       length: 16,
@@ -59,7 +50,7 @@ export class Redis extends pulumi.ComponentResource {
     }, { 
       parent: this, 
       provider: args.k8sProvider,
-      dependsOn: [ns, ...(args.dependsOn || [])]
+      dependsOn: [...(args.dependsOn || [])]
     });
 
     // Store the secret name and namespace for later use
@@ -125,7 +116,7 @@ export class Redis extends pulumi.ComponentResource {
       {
         parent: this,
         provider: args.k8sProvider,
-        dependsOn: [ns, redisSecret, ...(args.dependsOn || [])],
+        dependsOn: [redisSecret, ...(args.dependsOn || [])],
       },
     );
 

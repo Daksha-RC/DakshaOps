@@ -20,15 +20,6 @@ export class RcApp extends pulumi.ComponentResource {
     ) {
         super("dakshaOps:app:RcApp", name, {}, opts);
         pulumi.output(args.dbcred).apply(value => console.log("dbcred:", value));
-        // Ensure the namespace exists
-        const ns = new k8s.core.v1.Namespace(
-            args.namespace,
-            {
-                metadata: {name: args.namespace},
-            },
-            {parent: this, provider: args.k8sProvider, dependsOn: args.dependsOn},
-        );
-
         // Install the rc-app Helm chart from the local folder
         this.release = new k8s.helm.v3.Release(
             args.releaseName,
@@ -55,7 +46,7 @@ export class RcApp extends pulumi.ComponentResource {
             {
                 parent: this,
                 provider: args.k8sProvider,
-                dependsOn: [ns, ...(args.dependsOn || [])],
+                dependsOn: [...(args.dependsOn || [])],
             },
         );
 

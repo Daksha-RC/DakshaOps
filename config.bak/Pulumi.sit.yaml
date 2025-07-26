@@ -1,2 +1,5 @@
 config:
-  DakshaOps:dbUrl: postgres://sit-db.example.com
+  esc:token:
+    secure: AAABAO3pZC6hdS4HkafwFpTYLOolqW2ol+dAOL1R5T7mIoX8ZOEED/TKkCZHfGLB39C+LoXE8uX+qqfiNnqre8w0wIs9hUQz+YxQIQ==
+environment:
+  - Daksha/sit-daksha-cluster

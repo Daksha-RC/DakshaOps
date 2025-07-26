@@ -12,7 +12,7 @@ import {
     CNPG_SECRET_APP,
     CNPG_SECRET_DB,
     DO_CLUSTER_NAME,
-    DO_NODE_POOL_NAME,
+    DO_NODE_POOL_NAME, ESC_ENV,
     ESO_NAMESPACE,
     PULUMI_ORGANIZATION,
     RC_APP_NAMESPACE,
@@ -30,6 +30,7 @@ import {createGatewayCrd} from "./stacks/gatewaycrd";
 
 
 const env = pulumi.getStack();
+const config = new pulumi.Config();
 let k8sProvider: k8s.Provider;
 let kubeconfig: pulumi.Output<string>;
 
@@ -50,10 +51,34 @@ let kubeconfig: pulumi.Output<string>;
 
 
 if (env == "sit") {
+    // Node pool parameters directly from your doctl command
+    const nodePoolName = DO_NODE_POOL_NAME;
+    const nodePoolSize = "s-1vcpu-2gb";
+    const nodePoolCount = 1;
+    const nodePoolAutoScale = false; // Based on auto-scale=false
+    const nodePoolTags = ["k8s", "k8s:worker", "terraform:default-node-pool","created-by:pulumi"];
+
+    const k8sVersion = config.get("kubernetesVersion") || "1.33.1-do.2";
+    const vpcUuid = config.get("vpcUuid") || "441b360e-8036-4bed-b4b5-1cb1df04609a";
+    const clusterSubnet = config.get("clusterSubnet") || "10.110.0.0/16";
+    const serviceSubnet = config.get("serviceSubnet") || "10.111.0.0/22";
+
     const doCluster = createDOK8sCluster(DO_CLUSTER_NAME, {
         clusterName: DO_CLUSTER_NAME,
-        nodePoolName: DO_NODE_POOL_NAME,
-        nodeSize: "s-1vcpu-2gb"
+        version: k8sVersion,
+        vpcUuid: vpcUuid,
+        clusterSubnet: clusterSubnet,
+        serviceSubnet: serviceSubnet,
+        nodePool: {
+            name: nodePoolName,
+            size: nodePoolSize,
+            count: nodePoolCount,
+            autoScale: nodePoolAutoScale,
+            // minNodes and maxNodes are only relevant if autoScale is true.
+            // Since autoScale is false, we can omit them or set them to 0 if the interface requires it,
+            // but typically the provider ignores them if autoScale is false.
+            tags: nodePoolTags,
+        },
     });
     k8sProvider = doCluster.k8sProvider;
     kubeconfig = doCluster.kubeconfig;
@@ -98,12 +123,12 @@ const rc_app_ns = new k8s.core.v1.Namespace(RC_APP_NAMESPACE, {
 
 const esocrd = createEsoCrd(ESO_NAMESPACE, k8sProvider, [k8sProvider, eso_ns]);
 const cnpgcrd = createCnpgCrd(constants.RC_PG_NAMESPACE, kubeconfig, [k8sProvider, rc_pg_ns]);
-const gatewayCrd = createGatewayCrd("gatewayCrd", k8sProvider, kubeconfig);
+// const gatewayCrd = createGatewayCrd("gatewayCrd", k8sProvider, kubeconfig);
 
 
 // Note: Before running this program, you must set the ESC token in your Pulumi configuration:
 // pulumi config set --secret esc:token <your-esc-token>
-const escTokenSecret = createEscTokenSecret("esc-token", k8sProvider, ESO_NAMESPACE, "esctoken", [esocrd, eso_ns]);
+const escTokenSecret = createEscTokenSecret("esc-token", k8sProvider, ESO_NAMESPACE, "esctoken", [k8sProvider,esocrd, eso_ns]);
 
 // Create a ClusterSecretStore that connects to Pulumi ESC using the token
 const clusterSecretStore = createClusterSecretStore(
@@ -114,10 +139,10 @@ const clusterSecretStore = createClusterSecretStore(
     undefined,
     PULUMI_ORGANIZATION,
     esocrd.release,  // Pass the ESO CRD Helm release as a dependency
-    "dev-daksha-cluster", // Pulumi environment
+    ESC_ENV, // Pulumi environment
     "Daksha", // Pulumi project
     undefined, // <-- apiUrl, use undefined for default or provide a string
-    [escTokenSecret, eso_ns] // dependsOn
+    [escTokenSecret, eso_ns,k8sProvider] // dependsOn
 );
 
 // Create an ExternalSecret that fetches the db.cnpgPassword from Pulumi ESC
@@ -127,7 +152,7 @@ const cnpgSecret = createCnpgSecret(
     RC_PG_NAMESPACE,  // Use the same namespace as RC_APP_NAMESPACE
     clusterSecretStore,
     CNPG_SECRET,
-    [clusterSecretStore.secretStore, rc_pg_ns]  // Depend on the ClusterSecretStore
+    [clusterSecretStore.secretStore, rc_pg_ns,k8sProvider]  // Depend on the ClusterSecretStore
 );
 const cnpgSecretforApp = createCnpgSecret(
     CNPG_SECRET_APP,
@@ -135,12 +160,12 @@ const cnpgSecretforApp = createCnpgSecret(
     RC_APP_NAMESPACE,  // Use the same namespace as RC_APP_NAMESPACE
     clusterSecretStore,
     CNPG_SECRET,
-    [clusterSecretStore.secretStore, rc_app_ns]  // Depend on the ClusterSecretStore
+    [clusterSecretStore.secretStore, rc_app_ns,k8sProvider]  // Depend on the ClusterSecretStore
 );
 
 
 const rcDatabase = createPgCluster(RC_PG_CLUSTER_NAME, k8sProvider, RC_PG_NAMESPACE, constants.RC_DATABASE_NAME,
-    CNPG_SECRET_DB, [cnpgcrd, cnpgSecret, rc_pg_ns, eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecret]);
+    CNPG_SECRET_DB, [cnpgcrd, cnpgSecret, rc_pg_ns, eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecret,k8sProvider]);
 
 
 // Create Redis instance with built-in credentials
@@ -166,7 +191,7 @@ const rcDatabase = createPgCluster(RC_PG_CLUSTER_NAME, k8sProvider, RC_PG_NAMESP
 //
 const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE,
     constants.RC_APP_NAME, CNPG_SECRET_APP, undefined,
-    [eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecretforApp, cnpgSecret, rcDatabase]);
+    [eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecretforApp, cnpgSecret, rcDatabase,k8sProvider]);
 
 
 

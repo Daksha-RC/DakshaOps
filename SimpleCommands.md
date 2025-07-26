@@ -459,14 +459,91 @@ doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd  --output json
 doctl kubernetes cluster get 074852cc-989e-4ca3-bfe2-92643418c0b6 --output json | jq '.[0] | {name, version, cluster_subnet, service_subnet, vpc_uuid}'
 doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd --output json | jq '.[0] | {name, version, cluster_subnet, service_subnet, vpc_uuid}'
 
+Trace of `sit-daksha-cluster`
+kubectl get configmap cilium-config -n kube-system -o yaml | grep -E "enable-gateway-api|enable-l7-proxy|kube-proxy-replacement"
+
+export KUBECONFIG=/Users/mallru/.kube/sit-daksha-cluster-kubeconfig.yaml
+kubectl get secret sit-cnpg-secret-db -n sit-rc-pg-ns -o jsonpath='{.data.password}' | base64 --decode 
+
+externalsecret  sit-cnpg-secret-app sit-rc-app-ns
+pod sit-rc-app-ns Error: secret "sit-cnpg-secret-app" not found
+
+```
+
+```shell
+
+pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster sit-daksha 6e8321d7-c5e8-4ca0-959d-390ff46f48fd
+```
+
+```shell
+doctl kubernetes cluster list
+ID                                      Name          Region    Version        Auto Upgrade    Status     Node Pools
+6e8321d7-c5e8-4ca0-959d-390ff46f48fd    sit-daksha    blr1      1.33.1-do.0    false           running    sit-pool
+
+doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd --output json
 
 
+doctl kubernetes cluster create dit-daksha-cluster \
+    --region blr1 \
+    --version 1.33.1-do.2 \
+    --auto-upgrade=false \
+    --ha=false \
+    --surge-upgrade=true \
+    --routing-agent-enabled=false \
+    --maintenance-policy-day="any" \
+    --maintenance-policy-start-time="09:00" \
+    --tag "k8s" \
+    --node-pool "name=sit-initial-pool;size=s-1vcpu-2gb;count=1;auto-scale=false;tag=k8s,k8s:worker,terraform:default-node-pool" \
+    --vpc-uuid 441b360e-8036-4bed-b4b5-1cb1df04609a \
+    --wait
+    
+++++++++++++++
+
+doctl kubernetes cluster create eit-daksha-cluster \
+    --region blr1 \
+    --version 1.33.1-do.2 \
+    --auto-upgrade=false \
+    --ha=false \
+    --surge-upgrade=true \
+    --tag "k8s" \
+    --node-pool "name=sit-initial-pool;size=s-1vcpu-2gb;count=1;auto-scale=false;tag=k8s;tag=k8s:worker;tag=terraform:default-node-pool" \
+    --wait
+        
+
+Trace of `sit-daksha`
+kubectl get configmap cilium-config -n kube-system -o yaml | grep -E "enable-gateway-api|enable-l7-proxy|kube-proxy-replacement"
+enable-gateway-api: "true"
+enable-gateway-api-alpn: "false"
+enable-gateway-api-app-protocol: "false"
+enable-gateway-api-proxy-protocol: "false"
+enable-gateway-api-secrets-sync: "true"
+enable-l7-proxy: "true"
+kube-proxy-replacement: "true"
+kube-proxy-replacement-healthz-bind-address: 0.0.0.0:10256
 
 
++++++++++++++
+
+doctl kubernetes cluster create fit-daksha-cluster \
+    --region blr1 \
+    --version 1.33.1-do.2 \
+    --auto-upgrade=false \
+    --ha=false \
+    --surge-upgrade=true \
+    --tag "k8s" \
+    --node-pool "name=sit-initial-pool;size=s-1vcpu-2gb;count=1;auto-scale=false;tag=k8s;tag=k8s:worker;tag=terraform:default-node-pool" \
+    --vpc-uuid 441b360e-8036-4bed-b4b5-1cb1df04609a \
+    --cluster-subnet 10.110.0.0/16 \
+    --service-subnet 10.111.0.0/22 \
+    --wait
+    
+doctl kubernetes cluster get 6990e280-e1f8-4fcd-92bb-8bedc8c723a3 --format Name,ClusterSubnet,ServiceSubnet
+doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd --format Name,ClusterSubnet,ServiceSubnet
 
 
-
-
-
-
+pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster imported-fit-daksha-cluster fit-daksha-cluster
+    
+    
+    
+    
 ```

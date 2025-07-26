@@ -12,10 +12,7 @@ export class EsoCrd extends pulumi.ComponentResource {
     constructor(name: string, args: EsoCrdArgs, opts?: pulumi.ComponentResourceOptions) {
         super("dakshaOps:security:ExternalSecrets", name, {}, opts);
 
-        // Ensure the namespace exists
-        const ns = new k8s.core.v1.Namespace(name, {
-            metadata: {name: name},
-        }, {parent: this, provider: args.k8sProvider, dependsOn: args.dependsOn});
+
 
         // Install the External Secrets Operator via Helm
         this.release = new k8s.helm.v3.Release(name, {
@@ -33,7 +30,7 @@ export class EsoCrd extends pulumi.ComponentResource {
         }, {
             parent: this,
             provider: args.k8sProvider,
-            dependsOn: [ns, ...(args.dependsOn || [])],
+            dependsOn: [...(args.dependsOn || [])],
         });
 
         this.registerOutputs({
