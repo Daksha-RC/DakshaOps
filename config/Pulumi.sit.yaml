@@ -1,0 +1,8 @@
+config:
+  DakshaOps:vpcUuid: 441b360e-8036-4bed-b4b5-1cb1df04609a
+  DakshaOps:clusterSubnet: 10.120.0.0/16
+  DakshaOps:serviceSubnet: 10.121.0.0/22
+  esc:token:
+    secure: AAABAABn4lPv5K/20RIkIpJavbYoBmQwA2dXKmOHwF2V4DTt6W7Xy4h7Lacr9u+yGXZ8j6IODf+uGkiSbO1SeNOnNNIATnPJOpXlhw==
+environment:
+  - Daksha/sit-daksha-cluster
