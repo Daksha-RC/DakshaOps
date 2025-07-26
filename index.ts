@@ -88,7 +88,7 @@ if (env == "dsit") {
 } else if (env == "sit") {
 
     const fit_daksha_cluster = new digitalocean.KubernetesCluster("fit-daksha-cluster", {
-        clusterSubnet: "10.110.0.0/16",
+        clusterSubnet: "10.120.0.0/16",
         maintenancePolicy: {
             day: "any",
             startTime: "00:00",
@@ -102,7 +102,7 @@ if (env == "dsit") {
         routingAgent: {
             enabled: false,
         },
-        serviceSubnet: "10.111.0.0/22",
+        serviceSubnet: "10.121.0.0/22",
         version: "1.33.1-do.2",
         vpcUuid: "441b360e-8036-4bed-b4b5-1cb1df04609a",
     }, {
