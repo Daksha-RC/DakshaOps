@@ -431,7 +431,10 @@ FROM pg_authid WHERE rolname = 'dev-rc-database';
 
 kubectl exec postgres -- printenv -n dev-rc-pg-ns  | grep -i password
 
-
+kubectl exec -it -n sit-rc-pg-ns sit-rc-pg-cluster-1 -- /bin/bash 
+psql "postgres://sit-rc-database:rYHOn2w6ydZS57pNiz13yR8XSwOCNZX6v3bowTGRwsJGVzdaKornYa6pWqrOGuft@sit-rc-pg-cluster-rw.sit-rc-pg-ns.svc.cluster.local:5432/sit-rc-database"
+sit-rc-pg-cluster-rw.sit-rc-pg-ns.svc.cluster.local
+sit-rc-pg-cluster-rw.sit-rc-pg-ns.svc.cluster.local
 ```
 
 ```shell
@@ -542,7 +545,8 @@ doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd --format Name,
 
 
 pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster imported-fit-daksha-cluster fit-daksha-cluster
-    
+
+pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster fit-daksha-cluster 5ef80b94-a2ac-4720-8d16-15b32ac58359
     
     
     

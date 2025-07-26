@@ -25,6 +25,6 @@ export const CNPG_SECRET_DB = `${env}-cnpg-secret-db`;
 export const CNPG_SECRET_APP = `${env}-cnpg-secret-app`;
 export const CNPG_SECRET_STORE = `${env}-cnpg-secret-store`;
 
-export const ESC_ENV = `${env}--daksha-cluster`;
+export const ESC_ENV = `${env}-daksha-cluster`;
 // `"dev-daksha-cluster"`;
 
