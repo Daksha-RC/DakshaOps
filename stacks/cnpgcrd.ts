@@ -51,11 +51,11 @@ export class CnpgCrd extends pulumi.ComponentResource {
                 TMP_KUBECONFIG=$(mktemp)
                 trap 'rm -f "$TMP_KUBECONFIG"' EXIT
                 printf "%s" '${kc}' > "$TMP_KUBECONFIG"
-                KUBECONFIG="$TMP_KUBECONFIG" kubectl wait --for=condition=established crd/clusters.postgresql.cnpg.io --timeout=600s
+                KUBECONFIG="$TMP_KUBECONFIG" kubectl wait --for=condition=established crd/clusters.postgresql.cnpg.io --timeout=9000s
             `),
             // No delete command needed for waiting.
         }, {
-            dependsOn: [...(dependsOn || [])], // Depends on the operator being ready
+            dependsOn: [this.crds,...(dependsOn || [])], // Depends on the operator being ready
             parent: this,
         });
 

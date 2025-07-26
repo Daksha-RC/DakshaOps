@@ -547,7 +547,8 @@ doctl kubernetes cluster get 6e8321d7-c5e8-4ca0-959d-390ff46f48fd --format Name,
 pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster imported-fit-daksha-cluster fit-daksha-cluster
 
 pulumi import digitalocean:index/kubernetesCluster:KubernetesCluster fit-daksha-cluster 5ef80b94-a2ac-4720-8d16-15b32ac58359
-    
-    
+
+pulumi config get esc:token
+kubectl -n dev-eso-ns wait --for=condition=established crd/clustersecretstores.external-secrets.io --timeout=300s    
     
 ```

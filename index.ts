@@ -169,11 +169,11 @@ const clusterSecretStore = createClusterSecretStore(
     escTokenSecret,
     undefined,
     PULUMI_ORGANIZATION,
-    esocrd.release,  // Pass the ESO CRD Helm release as a dependency
+    undefined,  // Pass the ESO CRD Helm release as a dependency
     ESC_ENV, // Pulumi environment
     "Daksha", // Pulumi project
     undefined, // <-- apiUrl, use undefined for default or provide a string
-    [escTokenSecret, eso_ns, k8sProvider] // dependsOn
+    [escTokenSecret, eso_ns, k8sProvider, cnpgcrd] // dependsOn
 );
 
 // Create an ExternalSecret that fetches the db.cnpgPassword from Pulumi ESC
@@ -183,7 +183,7 @@ const cnpgSecret = createCnpgSecret(
     RC_PG_NAMESPACE,  // Use the same namespace as RC_APP_NAMESPACE
     clusterSecretStore,
     CNPG_SECRET,
-    [clusterSecretStore.secretStore, rc_pg_ns, k8sProvider]  // Depend on the ClusterSecretStore
+    [clusterSecretStore.secretStore, rc_pg_ns, k8sProvider, cnpgcrd]  // Depend on the ClusterSecretStore
 );
 const cnpgSecretforApp = createCnpgSecret(
     CNPG_SECRET_APP,
@@ -191,7 +191,7 @@ const cnpgSecretforApp = createCnpgSecret(
     RC_APP_NAMESPACE,  // Use the same namespace as RC_APP_NAMESPACE
     clusterSecretStore,
     CNPG_SECRET,
-    [clusterSecretStore.secretStore, rc_app_ns, k8sProvider]  // Depend on the ClusterSecretStore
+    [clusterSecretStore.secretStore, rc_app_ns, k8sProvider, cnpgcrd]  // Depend on the ClusterSecretStore
 );
 
 
@@ -222,7 +222,7 @@ const rcDatabase = createPgCluster(RC_PG_CLUSTER_NAME, k8sProvider, RC_PG_NAMESP
 //
 const rcApp = createRcApp(constants.RC_APP_NAME, k8sProvider, constants.RC_APP_NAMESPACE,
     constants.RC_APP_NAME, CNPG_SECRET_APP, undefined,
-    [eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecretforApp, cnpgSecret, rcDatabase, k8sProvider]);
+    [eso_ns, redis_ns, rc_pg_ns, esocrd, cnpgSecretforApp, cnpgSecret, rcDatabase, k8sProvider,cnpgcrd]);
 
 
 
