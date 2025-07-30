@@ -9,6 +9,7 @@ export interface DbInstanceArgs {
     project?: pulumi.Input<string>;
     region?: pulumi.Input<string>;
     diskSizeGb?: pulumi.Input<number>;
+    activationPolicy?: pulumi.Input<string>;
     dependsOn?: pulumi.Resource[];
 }
 
@@ -30,6 +31,7 @@ export class DbInstance extends pulumi.ComponentResource {
             deletionProtection: false,
             settings: {
                 tier: "db-f1-micro",
+                activationPolicy: args.activationPolicy ?? "ALWAYS",
                 edition: "ENTERPRISE",
                 diskSize: args.diskSizeGb ?? 10,
                 diskAutoresize: true,

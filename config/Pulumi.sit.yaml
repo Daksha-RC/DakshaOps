@@ -20,5 +20,7 @@ config:
   sit:userName: sit-daksha-rc
   sit:password:
     secure: AAABANZHbhzQkZK3y2yckCK4LgcGqhpwOqQneHaFV0RAO3JuUtUvVvJ4kO4r
+  db:activationPolicy: ALWAYS
+  sit:clientOriginUrl: http://auth0.io
 environment:
   - Daksha/sit-daksha-cluster
