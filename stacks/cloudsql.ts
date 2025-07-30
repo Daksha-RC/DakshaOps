@@ -27,6 +27,7 @@ export class CloudSql extends pulumi.ComponentResource {
             project: project,
             region: region,
             databaseVersion: "POSTGRES_17",
+            deletionProtection: false,
             settings: {
                 tier: "db-f1-micro",
                 edition: "ENTERPRISE",

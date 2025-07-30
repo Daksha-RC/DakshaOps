@@ -18,7 +18,7 @@ export class ServiceNetworkingSetup extends pulumi.ComponentResource {
         const enableApi = new gcp.projects.Service(`${name}-api`, {
             project: args.projectId,
             service: "servicenetworking.googleapis.com"
-        }, { parent: this });
+        }, { parent: this, protect: true, retainOnDelete: true });
 
         // Step 1: Reserve IP range for peering
         const reservedRange = new gcp.compute.GlobalAddress(`${name}-range`, {
@@ -26,7 +26,7 @@ export class ServiceNetworkingSetup extends pulumi.ComponentResource {
             addressType: "INTERNAL",
             prefixLength: 16,
             network: pulumi.interpolate`projects/${args.projectId}/global/networks/${networkName}`,
-        }, { parent: this });
+        }, { parent: this, protect: true });
 
         // Step 2: Create VPC Peering, after API is enabled
         this.peeringConnection = new gcp.servicenetworking.Connection(`${name}-peering`, {
@@ -35,7 +35,8 @@ export class ServiceNetworkingSetup extends pulumi.ComponentResource {
             reservedPeeringRanges: [reservedRange.name],
         }, {
             parent: this,
-            dependsOn: [enableApi] // Ensure API is enabled before peering
+            dependsOn: [enableApi], // Ensure API is enabled before peering
+            protect: true
         });
 
         this.registerOutputs({ peeringConnection: this.peeringConnection });
