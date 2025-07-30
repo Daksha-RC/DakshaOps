@@ -28,3 +28,4 @@ export const CNPG_SECRET_STORE = `${env}-cnpg-secret-store`;
 export const ESC_ENV = `${env}-daksha-cluster`;
 // `"dev-daksha-cluster"`;
 
+export const CLOUD_SQL_NAME = `${env}-daksha-db`;
