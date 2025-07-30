@@ -4,11 +4,21 @@ config:
   DakshaOps:serviceSubnet: 10.121.0.0/22
   #  esc:token:
   #    secure: AAABAABn4lPv5K/20RIkIpJavbYoBmQwA2dXKmOHwF2V4DTt6W7Xy4h7Lacr9u+yGXZ8j6IODf+uGkiSbO1SeNOnNNIATnPJOpXlhw==
-  gcp:project: "1030160157924"
+  gcp:project: daksha-rcgm
   gcp:region: asia-south2
   db:databaseName: daksha-rc
   db:databaseUserName: daksha-rc
   db:pgPassword:
     secure: AAABADXBCAD6SRUmPSCMpvwcEUpwWLQTwVrnTbgTyCE6vs3dKJuMTvI=
+  DakshaOps:pgPassword:
+    secure: AAABAFsKtuG6fG01DwM9PhF2K++ENgoWenzBPiZQnxERZHZRVYs8a2A=
+  dev:dbName: dev-daksha-rc
+  dev:userName: dev-daksha-rc
+  dev:password:
+    secure: AAABAPJtXGjUCNAHOkLylgMQSeSH7lEgBFl/zrlwCY9PEL0La9pOHrSK1P/T
+  sit:dbName: sit-daksha-rc
+  sit:userName: sit-daksha-rc
+  sit:password:
+    secure: AAABANZHbhzQkZK3y2yckCK4LgcGqhpwOqQneHaFV0RAO3JuUtUvVvJ4kO4r
 environment:
   - Daksha/sit-daksha-cluster

@@ -12,5 +12,13 @@ config:
     secure: AAABADXBCAD6SRUmPSCMpvwcEUpwWLQTwVrnTbgTyCE6vs3dKJuMTvI=
   DakshaOps:pgPassword:
     secure: AAABAFsKtuG6fG01DwM9PhF2K++ENgoWenzBPiZQnxERZHZRVYs8a2A=
+  dev:dbName: dev-daksha-rc
+  dev:userName: dev-daksha-rc
+  dev:password:
+    secure: AAABAPJtXGjUCNAHOkLylgMQSeSH7lEgBFl/zrlwCY9PEL0La9pOHrSK1P/T
+  sit:dbName: sit-daksha-rc
+  sit:userName: sit-daksha-rc
+  sit:password:
+    secure: AAABANZHbhzQkZK3y2yckCK4LgcGqhpwOqQneHaFV0RAO3JuUtUvVvJ4kO4r
 environment:
   - Daksha/sit-daksha-cluster
