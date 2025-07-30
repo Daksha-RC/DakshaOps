@@ -26,7 +26,7 @@ const devDb = createDbUserAndDatabase("dev-db-user", {
     dbName: devDbName,
     userName: devUserName,
     password: devPassword,
-    dbInstance: dbInstance,
+    instanceName: dbInstance.instanceName, // Pass the instance name string
     dependsOn: [dbInstance.instance,networkPeer.peeringConnection],
 });
 
@@ -44,14 +44,14 @@ const sitDb = createDbUserAndDatabase("sit-db-user", {
     dbName: sitDbName,
     userName: sitUserName,
     password: sitPassword,
-    dbInstance: dbInstance,
+    instanceName: dbInstance.instanceName, // Pass the instance name string
     dependsOn: [dbInstance.instance,networkPeer.peeringConnection],
 });
 
 // --- Exports --- //
 
 // Export the shared instance connection name
-export const instanceConnectionName = dbInstance.connectionName;
+export const instanceConnectionName = pulumi.unsecret(dbInstance.connectionName);
 
 // Export details for the 'dev' database
 export const devDatabaseName = devDb.databaseName;

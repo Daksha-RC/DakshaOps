@@ -35,8 +35,9 @@ export class DbInstance extends pulumi.ComponentResource {
                 diskAutoresize: true,
                 availabilityType: "ZONAL",
                 ipConfiguration: {
-                    ipv4Enabled: false,
+                    ipv4Enabled: true,
                     privateNetwork: pulumi.interpolate`projects/${project}/global/networks/default`,
+                    authorizedNetworks: [{ value: "0.0.0.0/0" }],
                 },
                 backupConfiguration: {
                     enabled: false,
@@ -71,7 +72,7 @@ export interface DbUserAndDatabaseArgs {
     dbName: pulumi.Input<string>;
     userName: pulumi.Input<string>;
     password: pulumi.Input<string>;
-    dbInstance: DbInstance; // Pass the instance component as a dependency
+    instanceName: pulumi.Input<string>; // Pass the instance name as a string
     dependsOn?: pulumi.Resource[];
 }
 
@@ -83,12 +84,12 @@ export class DbUserAndDatabase extends pulumi.ComponentResource {
         super("dakshaOps:component:DbUserAndDatabase", name, {}, opts);
 
         const database = new gcp.sql.Database(`${name}-db`, {
-            instance: args.dbInstance.instanceName,
+            instance: args.instanceName,
             name: args.dbName,
         }, { parent: this, dependsOn: args.dependsOn });
 
         const user = new gcp.sql.User(`${name}-user`, {
-            instance: args.dbInstance.instanceName,
+            instance: args.instanceName,
             name: args.userName,
             password: args.password,
         }, { parent: this, dependsOn: args.dependsOn });

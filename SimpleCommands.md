@@ -552,3 +552,13 @@ pulumi config get esc:token
 kubectl -n dev-eso-ns wait --for=condition=established crd/clustersecretstores.external-secrets.io --timeout=300s    
     
 ```
+
+```shell
+
+cloud-sql-proxy daksha-rcgm:asia-south2:shared-postgres-instance-instance-f2d8141
+cloud-sql-proxy gm:asia-south2:shared-postgres-instance-instance-f2d8141
+
+pulumi stack export --show-secrets
+pulumi stack output instanceConnectionName --show-secrets
+
+```

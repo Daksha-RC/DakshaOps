@@ -413,135 +413,6 @@
         }
       }
     },
-    "nodejs@latest": {
-      "last_modified": "2025-07-20T07:42:04Z",
-      "plugin_version": "0.0.2",
-      "resolved": "github:NixOS/nixpkgs/7c688a0875df5a8c28a53fb55ae45e94eae0dddb#nodejs_24",
-      "source": "devbox-search",
-      "version": "24.4.1",
-      "systems": {
-        "aarch64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/1c4jixl4s8kyc9ypy6fbwrbwwvaxldi8-nodejs-24.4.1",
-              "default": true
-            },
-            {
-              "name": "dev",
-              "path": "/nix/store/liix5qs67nyqidmi00zazw12ksc0pxxq-nodejs-24.4.1-dev"
-            },
-            {
-              "name": "libv8",
-              "path": "/nix/store/fm4q7qypbnb8iyf9qm7i07vzybhp6b53-nodejs-24.4.1-libv8"
-            }
-          ],
-          "store_path": "/nix/store/1c4jixl4s8kyc9ypy6fbwrbwwvaxldi8-nodejs-24.4.1"
-        },
-        "aarch64-linux": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/k24g5rcnx42s4lwmgr9fh898xsc45668-nodejs-24.4.1",
-              "default": true
-            },
-            {
-              "name": "libv8",
-              "path": "/nix/store/yz7jfa49dq3y5hk7w4fzgxbbxn5r4c7b-nodejs-24.4.1-libv8"
-            },
-            {
-              "name": "dev",
-              "path": "/nix/store/jiz68w6405makvg4iibnhx5hhq95hbpg-nodejs-24.4.1-dev"
-            }
-          ],
-          "store_path": "/nix/store/k24g5rcnx42s4lwmgr9fh898xsc45668-nodejs-24.4.1"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/wccpr20l2n1fmnyard3y33kkzi9iadb3-nodejs-24.4.1",
-              "default": true
-            },
-            {
-              "name": "dev",
-              "path": "/nix/store/cpw2f6acji9nl40wsdcxy7vqb1895i4p-nodejs-24.4.1-dev"
-            },
-            {
-              "name": "libv8",
-              "path": "/nix/store/b8q5m7qggq3dydfksmxnrqyx70qrf44w-nodejs-24.4.1-libv8"
-            }
-          ],
-          "store_path": "/nix/store/wccpr20l2n1fmnyard3y33kkzi9iadb3-nodejs-24.4.1"
-        },
-        "x86_64-linux": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/2bg4yn1ccasnw6cscqhgqwzfw8j2xq1m-nodejs-24.4.1",
-              "default": true
-            },
-            {
-              "name": "dev",
-              "path": "/nix/store/7865hgg0qmbyambm53765ddy96qsg1vs-nodejs-24.4.1-dev"
-            },
-            {
-              "name": "libv8",
-              "path": "/nix/store/rla4nj6lpf3dz3fxqbgqzvlm3bwd0545-nodejs-24.4.1-libv8"
-            }
-          ],
-          "store_path": "/nix/store/2bg4yn1ccasnw6cscqhgqwzfw8j2xq1m-nodejs-24.4.1"
-        }
-      }
-    },
-    "pulumi@latest": {
-      "last_modified": "2025-06-20T02:24:11Z",
-      "resolved": "github:NixOS/nixpkgs/076e8c6678d8c54204abcb4b1b14c366835a58bb#pulumi",
-      "source": "devbox-search",
-      "version": "3.162.0",
-      "systems": {
-        "aarch64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/j4xhyfs977gjx8fd37a74gizjkwx307k-pulumi-3.162.0",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/j4xhyfs977gjx8fd37a74gizjkwx307k-pulumi-3.162.0"
-        },
-        "aarch64-linux": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/2awf48d8ms9phb0h28n0dsqa6kpg1c52-pulumi-3.162.0",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/2awf48d8ms9phb0h28n0dsqa6kpg1c52-pulumi-3.162.0"
-        },
-        "x86_64-darwin": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/nmlnla7y5ysfy2l2s3iz7955dymfr1fd-pulumi-3.162.0",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/nmlnla7y5ysfy2l2s3iz7955dymfr1fd-pulumi-3.162.0"
-        },
-        "x86_64-linux": {
-          "outputs": [
-            {
-              "name": "out",
-              "path": "/nix/store/rc972cgrkb28wy72jj778cvi8zd5cxxb-pulumi-3.162.0",
-              "default": true
-            }
-          ],
-          "store_path": "/nix/store/rc972cgrkb28wy72jj778cvi8zd5cxxb-pulumi-3.162.0"
-        }
-      }
-    },
     "rustc@1.86.0": {
       "last_modified": "2025-05-16T20:19:48Z",
       "plugin_version": "0.0.1",
@@ -720,6 +591,54 @@
             }
           ],
           "store_path": "/nix/store/5b82ghrpwgzgjaw7wcyi16xyyh180xsr-sqlx-cli-0.8.6"
+        }
+      }
+    },
+    "typescript@latest": {
+      "last_modified": "2025-07-18T03:30:42Z",
+      "resolved": "github:NixOS/nixpkgs/e821e03193486359aa942372be2d9c1f377b7a18#typescript",
+      "source": "devbox-search",
+      "version": "5.8.3",
+      "systems": {
+        "aarch64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/50cqj24p4i83xfr3iamiqlgl12cc0nd2-typescript-5.8.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/50cqj24p4i83xfr3iamiqlgl12cc0nd2-typescript-5.8.3"
+        },
+        "aarch64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ahh9q43kwi0xkb2d0dkfn4j765z779rp-typescript-5.8.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/ahh9q43kwi0xkb2d0dkfn4j765z779rp-typescript-5.8.3"
+        },
+        "x86_64-darwin": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/ghj8sdhgv419g9cnm7xgk45if624630s-typescript-5.8.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/ghj8sdhgv419g9cnm7xgk45if624630s-typescript-5.8.3"
+        },
+        "x86_64-linux": {
+          "outputs": [
+            {
+              "name": "out",
+              "path": "/nix/store/8y2ckpw2l0arpw5hwkl5bc4mf4abgf12-typescript-5.8.3",
+              "default": true
+            }
+          ],
+          "store_path": "/nix/store/8y2ckpw2l0arpw5hwkl5bc4mf4abgf12-typescript-5.8.3"
         }
       }
     },
